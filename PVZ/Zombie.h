@@ -18,6 +18,7 @@ public:
 
 private:
     double speed;
+    int healthPoint;
     int hurt;
 
     std::shared_ptr<Plant> targetPlant{ nullptr };

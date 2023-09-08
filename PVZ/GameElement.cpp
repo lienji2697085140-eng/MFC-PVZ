@@ -2,8 +2,7 @@
 
 IMPLEMENT_DYNCREATE(GameElement, Visible)
 
-GameElement::GameElement(CRuntimeClass* msg, int hp) :
-    Visible(msg), healthPoint(hp) {
+GameElement::GameElement(CRuntimeClass* msg) : Visible(msg) {
 
 }
 

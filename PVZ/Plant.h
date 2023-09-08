@@ -22,6 +22,7 @@ protected:
     int skillMaxWaitTime; // 重置时间
     int skillWaitTime = 0; // 技能的冷却时间 为-1代表不启用技能
     CPoint plantPos{ 0 };
+    int healthPoint;
 
 public:
 

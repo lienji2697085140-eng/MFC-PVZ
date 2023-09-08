@@ -13,7 +13,7 @@ Zombie::Zombie(CRuntimeClass* classMsg, int hp, double moveSpeed, int h) :
 }
 
 void Zombie::draw(HDC hDC) {
-    GameElement::draw(hDC);
+    // GameElement::draw(hDC);
     std::string className(classMsg->m_lpszClassName);
     auto& rc = rcManage.getResource(className, getMapState());
 

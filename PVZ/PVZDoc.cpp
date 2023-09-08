@@ -13,13 +13,13 @@ PVZDoc::PVZDoc(): yard(), sbank()  {
     // Ìí¼ÓÖÖ×Ó
     std::vector<Seed> &seedElements = sbank.getSeedElements();
     seedElements.emplace_back(RUNTIME_CLASS(SunFlower), 
-                              SunFlower::PRICE - 100, 
+                              0, 
                               SunFlower::PLANT_TIME);
     seedElements.emplace_back(RUNTIME_CLASS(PeaShooterSingle), 
-                              PeaShooterSingle::PRICE - 100, 
+                              0, 
                               SunFlower::PLANT_TIME);
     seedElements.emplace_back(RUNTIME_CLASS(SnowPeaShooter), 
-                              SnowPeaShooter::PRICE - 200, 
+                              0, 
                               SunFlower::PLANT_TIME);
 
     sbank.orderSeed();

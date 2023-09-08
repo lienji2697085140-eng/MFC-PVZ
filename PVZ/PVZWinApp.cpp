@@ -49,7 +49,7 @@ void PVZWinApp::gameTickLoop(HWND, UINT, UINT_PTR, DWORD) {
 
     yard.update();
     
-    if (Visible::currentGameTick % 500 == 0) {
+    if (Visible::currentGameTick % 100 == 0) {
         // Éú³ÉÑô¹â
         int stX = yard.getWidth() / 6 + rand() % (int)(yard.getWidth() * 0.8);
         int stY = 80 + rand() % 40;

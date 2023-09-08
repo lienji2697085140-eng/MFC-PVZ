@@ -12,7 +12,7 @@ Plant::Plant(CRuntimeClass* classMsg, int hp, int maxTime) :
 
 void Plant::draw(HDC hDC) {
 
-    GameElement::draw(hDC);
+    // GameElement::draw(hDC);
 
     Yard &yard = theDoc->getYard();
     // 获得类信息

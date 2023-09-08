@@ -7,12 +7,10 @@ DECLARE_DYNCREATE_(GameElement)
 
 protected:
     size_t currentState = 0x0;
-    CRect collisioArea { 0 };
-    int healthPoint;
 
 public:
 
-    GameElement(CRuntimeClass* msg = nullptr, int hp = 0);
+    GameElement(CRuntimeClass* msg = nullptr);
 
     // ¶ÔÓ¦×´Ì¬
     size_t getCurrentState() { return currentState; }
@@ -31,9 +29,5 @@ public:
     virtual void draw(HDC hDC);
 
     virtual void stateSwitch();
-
-    int getHp() { return healthPoint; }
-
-    void damage(int h) { healthPoint -= h; };
 };
 

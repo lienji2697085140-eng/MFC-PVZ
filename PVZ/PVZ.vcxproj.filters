@@ -19,14 +19,8 @@
     <Filter Include="头文件\Plant">
       <UniqueIdentifier>{64bf1440-d725-4faf-96e7-1ee45c2dcefc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\Plant">
-      <UniqueIdentifier>{8377ddf0-db6a-4e4b-9d45-e2e54a7bd308}</UniqueIdentifier>
-    </Filter>
     <Filter Include="头文件\Ejects">
       <UniqueIdentifier>{c94b0608-a396-49d0-8d9b-d8133c1fef7e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\Ejects">
-      <UniqueIdentifier>{6b6d3a82-4332-46cf-a958-82dfc8b29840}</UniqueIdentifier>
     </Filter>
     <Filter Include="头文件\MFC">
       <UniqueIdentifier>{94939f6d-717a-44e6-aac9-ff90cbb5fc2c}</UniqueIdentifier>
@@ -34,8 +28,23 @@
     <Filter Include="源文件\MFC">
       <UniqueIdentifier>{7209f267-f58e-4a51-b9e8-7fcec88c386b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\Zomibe">
+    <Filter Include="源文件\other">
+      <UniqueIdentifier>{7b4e35e1-1f14-4140-ab7a-23d77e40b99b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\ejects">
+      <UniqueIdentifier>{6b6d3a82-4332-46cf-a958-82dfc8b29840}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\plant">
+      <UniqueIdentifier>{8377ddf0-db6a-4e4b-9d45-e2e54a7bd308}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\zomibe">
       <UniqueIdentifier>{9dc7d11e-ce76-436e-bf21-84fbc8e6f024}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\recources">
+      <UniqueIdentifier>{2a1259c2-ebb8-426f-9b34-6bf8b4f9b132}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\base">
+      <UniqueIdentifier>{d0f7fb23-6b8f-43c7-b496-7c768cc6e0e7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -116,50 +125,26 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Yard.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="GameElement.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Visible.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="SeedBank.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Seed.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Sun.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManage.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="SunFlower.cpp">
-      <Filter>源文件\Plant</Filter>
+      <Filter>源文件\plant</Filter>
     </ClCompile>
     <ClCompile Include="Plant.cpp">
-      <Filter>源文件\Plant</Filter>
+      <Filter>源文件\plant</Filter>
     </ClCompile>
     <ClCompile Include="SnowPeaShooter.cpp">
-      <Filter>源文件\Plant</Filter>
+      <Filter>源文件\plant</Filter>
     </ClCompile>
     <ClCompile Include="PeaShooterSingle.cpp">
-      <Filter>源文件\Plant</Filter>
+      <Filter>源文件\plant</Filter>
     </ClCompile>
     <ClCompile Include="Ejects.cpp">
-      <Filter>源文件\Ejects</Filter>
+      <Filter>源文件\ejects</Filter>
     </ClCompile>
     <ClCompile Include="ProjectilePea.cpp">
-      <Filter>源文件\Ejects</Filter>
+      <Filter>源文件\ejects</Filter>
     </ClCompile>
     <ClCompile Include="ProjectileSnowPea.cpp">
-      <Filter>源文件\Ejects</Filter>
+      <Filter>源文件\ejects</Filter>
     </ClCompile>
     <ClCompile Include="PVZDoc.cpp">
       <Filter>源文件\MFC</Filter>
@@ -174,10 +159,34 @@
       <Filter>源文件\MFC</Filter>
     </ClCompile>
     <ClCompile Include="NormalZombie.cpp">
-      <Filter>源文件\Zomibe</Filter>
+      <Filter>源文件\zomibe</Filter>
     </ClCompile>
     <ClCompile Include="Zombie.cpp">
-      <Filter>源文件\Zomibe</Filter>
+      <Filter>源文件\zomibe</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManage.cpp">
+      <Filter>源文件\recources</Filter>
+    </ClCompile>
+    <ClCompile Include="GameElement.cpp">
+      <Filter>源文件\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Visible.cpp">
+      <Filter>源文件\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>源文件\other</Filter>
+    </ClCompile>
+    <ClCompile Include="Seed.cpp">
+      <Filter>源文件\other</Filter>
+    </ClCompile>
+    <ClCompile Include="SeedBank.cpp">
+      <Filter>源文件\other</Filter>
+    </ClCompile>
+    <ClCompile Include="Sun.cpp">
+      <Filter>源文件\other</Filter>
+    </ClCompile>
+    <ClCompile Include="Yard.cpp">
+      <Filter>源文件\other</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -136,6 +136,7 @@
   <ItemGroup>
     <ClInclude Include="Config.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="GameEntity.h" />
     <ClInclude Include="NormalZombie.h" />
     <ClInclude Include="PeaShooterSingle.h" />
     <ClInclude Include="Plant.h" />
