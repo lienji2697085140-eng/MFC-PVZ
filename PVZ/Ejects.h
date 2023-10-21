@@ -1,7 +1,7 @@
 #pragma once
-#include "GameElement.h"
+#include "GameEntity.h"
 
-class Ejects : public GameElement {
+class Ejects : public GameEntity {
     DECLARE_DYNCREATE(Ejects)
 
 public:
@@ -16,7 +16,7 @@ public:
 
 public:
     // »æÖÆ
-    virtual void draw(HDC);
+    virtual void draw(HDC, int xOffset = 0, int yOffset = 0);
 
     void update();
 

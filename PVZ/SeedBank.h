@@ -1,6 +1,4 @@
 #pragma once
-//#include "Visible.h"
-//#include "Seed.h"
 #include "GameElement.h"
 #include <functional>
 
@@ -27,7 +25,7 @@ public:
     // 利用可调用对象遍历列表
     void foreachAllSeed(std::function<void(Seed&)>, CRuntimeClass* thePlant);
 
-    virtual void draw(HDC);
+    virtual void draw(HDC, int xOffset = 0, int yOffset = 0);
 
 private:
     std::vector<Seed> seedElements;

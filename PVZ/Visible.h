@@ -1,10 +1,4 @@
 #pragma once
-//#include <afxwin.h>
-//#include <atlimage.h>
-//#include <string>
-//#include <vector>
-//#include <map>
-
 #include <afxwin.h>
 #include <atlimage.h>
 #include <map>
@@ -17,7 +11,7 @@
 
 class Visible : public CObject {
 
-    DECLARE_DYNCREATE_(Visible)
+    DECLARE_DYNCREATE(Visible)
 
 public:
 
@@ -42,7 +36,7 @@ public:
 
     Visible(CRuntimeClass* msg = nullptr);
 
-    virtual void draw(HDC);
+    virtual void draw(HDC, int xOffset = 0, int yOffset = 0);
 
     void nextAnimateTick() {
         auto& rc = rcManage.getResource(classMsg->m_lpszClassName, getMapState());

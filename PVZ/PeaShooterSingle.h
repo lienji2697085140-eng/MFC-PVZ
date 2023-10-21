@@ -1,40 +1,38 @@
 #pragma once
 #include <afxwin.h>
+
 #include "Plant.h"
 #include "ProjectilePea.h"
 
 // 动态创建机制
 
 class PeaShooterSingle : public Plant {
+  DECLARE_DYNCREATE(PeaShooterSingle)
 
-    DECLARE_DYNCREATE(PeaShooterSingle)
+ public:
+  // 设置贴图状态
+  enum MapStatus { Dynamic = 1, DynamicLaunch };
 
-public:
+ public:
+  static constexpr int HP = 300;
+  static constexpr int PLANTTIME = 150;
+  static constexpr int PRICE = 100;
+  // static constexpr int SKILL_MAX_TIME = 50;
 
-    // 设置贴图状态
-    enum MapStatus { Dynamic = 1, DynamicLaunch };
+ private:
+  CRuntimeClass* ejectClass;
 
-public:
-    static constexpr int HP = 300;
-    static constexpr int PLANTTIME = 150;
-    static constexpr int PRICE = 100;
-    // static constexpr int SKILL_MAX_TIME = 50;
+ public:
+  PeaShooterSingle(CRuntimeClass* classMsg = RUNTIME_CLASS(PeaShooterSingle),
+                   CRuntimeClass* eject = RUNTIME_CLASS(ProjectilePea),
+                   int hp = HP);
 
-private:
-    CRuntimeClass* ejectClass;
+ public:
+  virtual void draw(HDC hDC, int xOffset = 0, int yOffset = 0);
 
-public:
+  virtual void skill();
 
-    PeaShooterSingle(CRuntimeClass* classMsg = RUNTIME_CLASS(PeaShooterSingle), 
-                     CRuntimeClass* eject = RUNTIME_CLASS(ProjectilePea), int hp = HP);
+  virtual bool skillCheck();
 
-public:
-    virtual void draw(HDC hDC);
-
-    virtual void skill();
-
-    virtual bool skillCheck();
-
-    virtual void stateSwitch(bool isHalf);
+  virtual void stateSwitch(bool isHalf);
 };
-

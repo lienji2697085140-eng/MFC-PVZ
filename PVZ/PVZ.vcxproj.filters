@@ -46,18 +46,15 @@
     <Filter Include="源文件\base">
       <UniqueIdentifier>{d0f7fb23-6b8f-43c7-b496-7c768cc6e0e7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\base">
+      <UniqueIdentifier>{c2730616-6693-4481-85ca-a8633de719fa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Yard.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="GameElement.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Visible.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
@@ -123,6 +120,24 @@
     <ClInclude Include="resource.h">
       <Filter>头文件\MFC</Filter>
     </ClInclude>
+    <ClInclude Include="GameElement.h">
+      <Filter>头文件\base</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEntity.h">
+      <Filter>头文件\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Visible.h">
+      <Filter>头文件\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Wallnut.h">
+      <Filter>头文件\Plant</Filter>
+    </ClInclude>
+    <ClInclude Include="Chomper.h">
+      <Filter>头文件\Plant</Filter>
+    </ClInclude>
+    <ClInclude Include="Squash.h">
+      <Filter>头文件\Plant</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SunFlower.cpp">
@@ -187,6 +202,18 @@
     </ClCompile>
     <ClCompile Include="Yard.cpp">
       <Filter>源文件\other</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEntity.cpp">
+      <Filter>源文件\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Wallnut.cpp">
+      <Filter>源文件\plant</Filter>
+    </ClCompile>
+    <ClCompile Include="Chomper.cpp">
+      <Filter>源文件\plant</Filter>
+    </ClCompile>
+    <ClCompile Include="Squash.cpp">
+      <Filter>源文件\plant</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

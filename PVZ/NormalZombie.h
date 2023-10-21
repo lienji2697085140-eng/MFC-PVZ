@@ -9,7 +9,7 @@ private:
 
     static constexpr int HP = 181;
     static constexpr double MOVESPEED = 0.0002;
-    static constexpr int HURT = 20;
+    static constexpr int HURT = 60;
 
 public:
     NormalZombie(CRuntimeClass* classMsg = RUNTIME_CLASS(NormalZombie), 

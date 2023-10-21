@@ -25,6 +25,7 @@ public:
     ImageRes(const std::string& className, size_t s, size_t a, const std::string& path) :
             theClassName(className), state(s), animateTick(a), filePath(path), img(new CImage) {
         img->Load(this->filePath.c_str());
+        
         // 对阳光特殊处理
         if (className == "Sun") {
             for (int i = 0; i < img->GetWidth(); ++i) {
@@ -36,6 +37,17 @@ public:
                 }
             }
         }
+
+        //if (className == "NormalZombie") {
+        //    for (int i = 0; i < img->GetWidth(); ++i) {
+        //        for (int j = 0; j < img->GetHeight(); ++j) {
+        //            byte* pByte = (byte*)img->GetPixelAddress(i, j);
+        //            pByte[0] = 200;// pByte[1] * pByte[3] / 100;
+        //            // pByte[1] = 0;//pByte[1] * pByte[3] / 255;
+        //            // pByte[2] = 0;//pByte[2] * pByte[3] / 255;
+        //        }
+        //    }
+        //}
     }
 
     bool operator<(const ImageRes& img) const {
@@ -44,6 +56,52 @@ public:
 
     CImage* operator->() {
         return img.get();
+    }
+
+    bool changeColor(CImage* destImage) {
+        if (img->IsNull())
+            return FALSE;
+        //源图像参数
+        BYTE* srcPtr = (BYTE*)img->GetBits();
+        int srcBitsCount = img->GetBPP();
+        int srcWidth = img->GetWidth();
+        int srcHeight = img->GetHeight();
+        int srcPitch = img->GetPitch();
+        //销毁原有图像
+        if (!destImage->IsNull())
+        {
+            //destImage->Destroy();
+        }
+        //创建新图像
+        //if (srcBitsCount == 32)   //支持alpha通道
+        //{
+            destImage->Create(srcWidth, srcHeight, srcBitsCount, 1);
+        /*}
+        else
+        {
+            destImage->Create(srcWidth, srcHeight, srcBitsCount, 0);
+        }*/
+        //加载调色板
+        if (srcBitsCount <= 8 && img->IsIndexed())//需要调色板
+        {
+            RGBQUAD pal[256];
+            int nColors = img->GetMaxColorTableEntries();
+            if (nColors > 0)
+            {
+                img->GetColorTable(0, nColors, pal);
+                destImage->SetColorTable(0, nColors, pal);//复制调色板程序
+            }
+        }
+        //目标图像参数
+        BYTE* destPtr = (BYTE*)img->GetBits();
+        int destPitch = destImage->GetPitch();
+        //复制图像数据
+        for (int i = 0; i < srcHeight; i++)
+        {
+            memcpy(destPtr + i * destPitch, srcPtr + i * srcPitch, abs(srcPitch));
+        }
+
+        return true;
     }
 
 public:

@@ -16,10 +16,3 @@
 #define SLIDING_WINDOW 0
 // ÄÚÈÝÏÔÊ¾±ÈÀý 
 #define ZOOM_FACTOR 0.5
-
-#define GET_RUNTIME_MESSAGE \
-        virtual CRuntimeClass* getRuntimeMessage() { return GetRuntimeClass(); }
-
-#define DECLARE_DYNCREATE_(class_name) \
-        DECLARE_DYNCREATE(class_name) \
-        GET_RUNTIME_MESSAGE

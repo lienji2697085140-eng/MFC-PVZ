@@ -7,7 +7,6 @@
 #include "Visible.h"
 #include "Ejects.h"
 #include "Plant.h"
-// #include "Zombie.h"
 
 class Zombie;
 
@@ -42,7 +41,7 @@ public:
     zombies& getZombieList();
 
     // yard的绘制函数
-    virtual void draw(HDC);
+    virtual void draw(HDC, int xOffset = 0, int yOffset = 0);
 
     bool onClick(int cx, int cy);
 
@@ -58,14 +57,10 @@ public:
 
     int getPlantTopY() { return (int)(topY + height * 0.12); }
 
-    plant_element& getIsPlacedPlant(int, int);
-
     template<typename Ty>
     void foreach(Ty& container, std::function<void(typename Ty::value_type::iterator&, int)>);
 
     void crossedDelete();
-
-    void attackUpdate();
 
     // 更新院子内所有的元素
     void update();

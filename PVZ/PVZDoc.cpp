@@ -1,44 +1,37 @@
 #include "PVZDoc.h"
-#include "SunFlower.h"
+
+#include "Chomper.h"
 #include "PeaShooterSingle.h"
-#include "SnowPeaShootter.h"
-#include "Seed.h"
 #include "ProjectilePea.h"
+#include "Seed.h"
+#include "SnowPeaShootter.h"
+#include "Squash.h"
+#include "SunFlower.h"
+#include "Wallnut.h"
 
 IMPLEMENT_DYNCREATE(PVZDoc, CDocument)
 
-PVZDoc::PVZDoc(): yard(), sbank()  {
-    sbank.setLeftX(yard.getWidth() / 6);
-    sbank.setTopY(0);
-    // 添加种子
-    std::vector<Seed> &seedElements = sbank.getSeedElements();
-    seedElements.emplace_back(RUNTIME_CLASS(SunFlower), 
-                              0, 
-                              SunFlower::PLANT_TIME);
-    seedElements.emplace_back(RUNTIME_CLASS(PeaShooterSingle), 
-                              0, 
-                              SunFlower::PLANT_TIME);
-    seedElements.emplace_back(RUNTIME_CLASS(SnowPeaShooter), 
-                              0, 
-                              SunFlower::PLANT_TIME);
-
-    sbank.orderSeed();
+PVZDoc::PVZDoc() : yard(), sbank() {
+  sbank.setLeftX(yard.getWidth() / 6);
+  sbank.setTopY(0);
+  // 添加种子
+  std::vector<Seed>& seedElements = sbank.getSeedElements();
+  seedElements.emplace_back(RUNTIME_CLASS(SunFlower), 0, SunFlower::PLANT_TIME);
+  seedElements.emplace_back(RUNTIME_CLASS(PeaShooterSingle), 0,
+                            SunFlower::PLANT_TIME);
+  seedElements.emplace_back(RUNTIME_CLASS(SnowPeaShooter), 20,
+                            SunFlower::PLANT_TIME);
+  seedElements.emplace_back(RUNTIME_CLASS(Wallnut), Wallnut::PRICE,
+                            SunFlower::PLANT_TIME);
+  seedElements.emplace_back(RUNTIME_CLASS(Chomper), 0, SunFlower::PLANT_TIME);
+  seedElements.emplace_back(RUNTIME_CLASS(Squash), 0, SunFlower::PLANT_TIME);
+  sbank.orderSeed();
 }
 
-Yard& PVZDoc::getYard() {
-    return yard;
-}
+Yard& PVZDoc::getYard() { return yard; }
 
-SeedBank& PVZDoc::getSeedBank() {
-    return sbank;
-}
+SeedBank& PVZDoc::getSeedBank() { return sbank; }
 
-Player& PVZDoc::getPlayer() {
-    return player;
-}
+Player& PVZDoc::getPlayer() { return player; }
 
-PVZDoc::SunlightList& PVZDoc::getSunList() {
-    return sunList;
-}
-
-
+PVZDoc::SunlightList& PVZDoc::getSunList() { return sunList; }

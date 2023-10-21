@@ -2,29 +2,28 @@
 #include "Plant.h"
 
 class SunFlower : public Plant {
+  DECLARE_DYNCREATE(SunFlower)
 
-    DECLARE_DYNCREATE(SunFlower)
+ public:
+  enum MapStatus { Dynamic = 1, DynamicBright };
 
-public:
+ public:
+  // 植物基本属性
+  static constexpr int HP = 300;
+  static constexpr int PLANT_TIME = 200;
+  static constexpr int PRICE = 50;
+  // 15秒产生一次阳光
+  static constexpr int SKILL_MAX_TIME = 1500;
 
-    enum MapStatus { Dynamic = 1, DynamicBright };
+ public:
+  SunFlower();
 
-public:
-    // 植物基本属性
-    static constexpr int HP = 300;
-    static constexpr int PLANT_TIME = 200;
-    static constexpr int PRICE = 50;
-    static constexpr int SKILL_MAX_TIME = 200;
+ public:
+  virtual void stateSwitch(bool isHalf);
 
-public:
+  virtual void draw(HDC hDC, int xOffset = 0, int yOffset = 0);
 
-    SunFlower();
+  virtual void skill();
 
-public:
-    virtual void draw(HDC hDC);
-
-    virtual void skill(PVZDoc&);
-
-    virtual bool skillCheck();
+  virtual bool skillCheck();
 };
-

@@ -1,51 +1,53 @@
 #pragma once
-#include "GameElement.h"
+#include "GameEntity.h"
 
 class Sun : public GameElement {
+  DECLARE_DYNCREATE(Sun)
 
-    DECLARE_DYNCREATE(Sun)
+ public:
+  enum { Flash = 1, NoFlash };
 
-public:
+  enum {
+    SLOWDOWN = 0b1,
+    JUMP = 0b10,
+    COLLECTED = 0b100,
+    NOFLASH = 0b1000,
+    FLASH = 0b10000
+  };
 
-    enum { Flash = 1, NoFlash };
+  const static int LIFE_TIME = 400;
 
-    enum { 
-        SLOWDOWN = 0b1,
-        JUMP = 0b10, 
-        COLLECTED = 0b100,
-        NOFLASH = 0b1000,
-        FLASH = 0b10000
-    };
-private:
-    int sunValue{ 25 };
-    POINT finalPoint{ 0 };
+ private:
+  int sunValue{25};
+  int lifeTime;
+  CPoint finalPoint{0};
 
-public:
-    double jumpParam = 1;
-    double slope = 0;
-    double intercept = 0;
-    bool moveFlg = true;
+ public:
+  double jumpParam = 1;
+  double xStep = 0;
+  double yStep = 0;
+  int distance = 0;
+  int moveSpeed = 0;
+  bool moveFlg = true;
 
-public:
+ public:
+  Sun();
 
-    Sun();
+  void draw(HDC, int xOffset = 0, int yOffset = 0);
 
-    void draw(HDC);
+  void update();
 
-    //int getLifeTime();
+  int getSunValue();
 
-    //void setLiftTime(int left);
+  bool onClick(int cx, int cy);
 
-    void update();
+  int getLifeTime() { return lifeTime; }
 
-    int getSunValue();
+  void setFinalPoint(CPoint fp) { finalPoint = fp; }
 
-    bool onClick(int cx, int cy);
+  POINT getMoveParam();
+  void setMoveParam(POINT);
 
-    POINT getMoveParam();
-    void setMoveParam(POINT);
-
-    void setMoveSlope(double slope);
-    double getMoveSlope();
+  void setMoveSlope(double slope);
+  double getMoveSlope();
 };
-

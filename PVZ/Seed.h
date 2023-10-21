@@ -43,7 +43,7 @@ public:
 
     void update(SeedBank&);
 
-    virtual void draw(HDC);
+    virtual void draw(HDC, int xOffset = 0, int yOffset = 0);
 
     virtual bool onClick(int cx, int cy);
 };

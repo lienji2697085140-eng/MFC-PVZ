@@ -1,45 +1,35 @@
 #pragma once
-#include "PVZDoc.h"
 #include "GameElement.h"
-class Zombie : public GameElement {
+#include "PVZDoc.h"
+class Zombie : public GameEntity {
+  DECLARE_DYNCREATE(Zombie)
 
-    DECLARE_DYNCREATE(Zombie)
+ public:
+  enum State { STAND = 0x10, MOVE = 0x100, EAT = 0x1000, HURT = 0x10000 };
 
-public:
+  enum MapState { StandDynamic = 0, MoveDynamic, EatDynamic };
 
-    enum State { 
-        STAND = 0x10, 
-        MOVE = 0x100, 
-        EAT = 0x1000, 
-        HURT = 0x10000
-    };
+ private:
+  double speed;
+  int healthPoint;
+  int hurt;
 
-    enum MapState { StandDynamic = 0, MoveDynamic, EatDynamic };
+  std::shared_ptr<Plant> targetPlant{nullptr};
 
-private:
-    double speed;
-    int healthPoint;
-    int hurt;
+ public:
+  Zombie(CRuntimeClass* classMsg = nullptr, int hp = 0, double speed = 0,
+         int hurt = 0);
 
-    std::shared_ptr<Plant> targetPlant{ nullptr };
+  // 绘制函数和功能函数
+  virtual void draw(HDC, int xOffset = 0, int yOffset = 0);
 
-public:
+  void update();
 
-    Zombie(CRuntimeClass* classMsg = nullptr, int hp = 0, double speed = 0, int hurt = 0);
+  void setSpeed(double s) { speed = s; }
 
-    // 绘制函数和功能函数
-    virtual void draw(HDC);
+  void setTargetPlant(std::shared_ptr<Plant> p) { targetPlant = p; }
 
-    virtual bool collisio(GameElement&);
+  void stateSwitch(bool isHalf);
 
-    void update();
-
-    void setSpeed(double s) { speed = s; }
-
-    void setTargetPlant(std::shared_ptr<Plant> p) { targetPlant = p; }
-
-    void stateSwitch(bool isHalf);
-
-    void attack();
+  void attack();
 };
-

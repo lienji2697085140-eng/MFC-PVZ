@@ -1,11 +1,4 @@
 #pragma once
-//#include <afxwin.h>
-//#include <memory>
-//#include <list>
-//#include "Plant.h"
-//#include "SeedBank.h"
-//#include "Yard.h"
-//#include "Sun.h"
 #include <afxwin.h>
 #include <memory>
 #include <list>
