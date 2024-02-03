@@ -3,4 +3,4 @@
 IMPLEMENT_DYNCREATE(ProjectileSnowPea, ProjectilePea)
 
 ProjectileSnowPea::ProjectileSnowPea()
-    : ProjectilePea(RUNTIME_CLASS(ProjectileSnowPea)) {}
+  : ProjectilePea(RUNTIME_CLASS(ProjectileSnowPea)) {}

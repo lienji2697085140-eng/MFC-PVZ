@@ -1,6 +1,5 @@
 #pragma once
-// #include "GameElement.h"
-//  #include "GameElement.h"
+#include "stdafx.h"
 #include "GameEntity.h"
 
 class Seed;
@@ -12,7 +11,7 @@ extern PVZDoc* theDoc;
 class Plant : public GameEntity {
   DECLARE_DYNCREATE(Plant)
 
-  enum MapState { DefaultDynamic = 1, SkillDynamic };
+    enum MapState { DefaultDynamic = 1, SkillDynamic };
 
   enum State {
     DEFAULT = 0x10,
@@ -25,12 +24,12 @@ class Plant : public GameEntity {
 
   friend class Seed;
 
- protected:
+protected:
   int skillMaxWaitTime;   // 重置时间
   int skillWaitTime = 0;  // 技能的冷却时间 为-1代表不启用技能
-  CPoint plantPos{0};
+  CPoint plantPos{ 0 };
 
- public:
+public:
   Plant(CRuntimeClass* classMsg = nullptr, int hp = 0, int skillMaxTime = -1);
 
   CPoint getPlantPos() const { return plantPos; }

@@ -1,4 +1,5 @@
 #pragma once
+#include "stdafx.h"
 #include <afxwin.h>
 
 #include "Plant.h"
@@ -9,25 +10,25 @@
 class PeaShooterSingle : public Plant {
   DECLARE_DYNCREATE(PeaShooterSingle)
 
- public:
+public:
   // …Ë÷√Ã˘Õº◊¥Ã¨
   enum MapStatus { Dynamic = 1, DynamicLaunch };
 
- public:
+public:
   static constexpr int HP = 300;
   static constexpr int PLANTTIME = 150;
   static constexpr int PRICE = 100;
   // static constexpr int SKILL_MAX_TIME = 50;
 
- private:
+private:
   CRuntimeClass* ejectClass;
 
- public:
+public:
   PeaShooterSingle(CRuntimeClass* classMsg = RUNTIME_CLASS(PeaShooterSingle),
-                   CRuntimeClass* eject = RUNTIME_CLASS(ProjectilePea),
-                   int hp = HP);
+    CRuntimeClass* eject = RUNTIME_CLASS(ProjectilePea),
+    int hp = HP);
 
- public:
+public:
   virtual void draw(HDC hDC, int xOffset = 0, int yOffset = 0);
 
   virtual void skill();

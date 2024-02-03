@@ -1,15 +1,16 @@
 #pragma once
+#include "stdafx.h"
 #include "ProjectilePea.h"
+
 class ProjectileSnowPea : public ProjectilePea
 {
-    DECLARE_DYNCREATE(ProjectileSnowPea)
+  DECLARE_DYNCREATE(ProjectileSnowPea)
 
 public:
-    // 移动速度
-    static constexpr int step = 3;
+  // 移动速度
+  static constexpr int step = 3;
 
 public:
 
-    ProjectileSnowPea();
+  ProjectileSnowPea();
 };
-

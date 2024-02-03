@@ -7,7 +7,7 @@ IMPLEMENT_DYNCREATE(Wallnut, Plant)
 extern PVZDoc* theDoc;
 
 Wallnut::Wallnut()
-    : Plant(RUNTIME_CLASS(Wallnut), Wallnut::HP) {}
+  : Plant(RUNTIME_CLASS(Wallnut), Wallnut::HP) {}
 
 void Wallnut::draw(HDC hDC, int xOffset, int yOffset) {
   Plant::draw(hDC);
@@ -18,9 +18,11 @@ void Wallnut::stateSwitch(bool isHalf) { Plant::stateSwitch(isHalf); }
 void Wallnut::update() {
   if (this->getHp() < 1000) {
     setMapState(Wallnut::ThirdDynamic);
-  } else if (this->getHp() < 2000) {
+  }
+  else if (this->getHp() < 2000) {
     setMapState(Wallnut::SecondDynamic);
-  } else {
+  }
+  else {
     setMapState(Wallnut::FristDynamic);
   }
   Plant::update();

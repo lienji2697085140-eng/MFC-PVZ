@@ -16,7 +16,7 @@ void SeedBank::updateAllSeedState() {
 }
 
 void SeedBank::foreachAllSeed(std::function<void(Seed&)> call,
-                              CRuntimeClass* thePlant) {
+  CRuntimeClass* thePlant) {
   for (auto& seed : seedElements) {
     if (thePlant == seed.getPlantClass()) {
       call(seed);
@@ -31,22 +31,16 @@ void SeedBank::draw(HDC hDC, int xOffset, int yOffset) {
   CString sunlightStr;
   sunlightStr.Format("%d", sunlight);
   auto& dock = rcManage.getResource("SeedBank", currentState);
-  // dock[0]->BitBlt(hDC, leftX, topY, 600, 100, 0, 0);
-  dock[0]->AlphaBlend(hDC, leftX + SLIDING_WINDOW, topY);
-  // dock[0]->AlphaBlend(hDC, leftX + SLIDING_WINDOW, topY, dock[0]->GetWidth()
-  // * 1.25, dock[0]->GetHeight() * 1.25, 0, 0, dock[0]->GetWidth(),
-  // dock[0]->GetHeight());
+  dock[0]->AlphaBlend(hDC, (int)(leftX + SLIDING_WINDOW), (int)(topY));
   for (auto& seed : seedElements) {
     seed.draw(hDC);
   }
   // œ‘ æ—Ùπ‚¡ø
   ::SetBkMode(hDC, TRANSPARENT);
-  // CRect textArea = { 100, 60, 180, 80 };
-  CRect textArea(leftX, topY + (int)(height * 0.7), leftX + (int)(width * 0.18),
-                 topY + height);
+  CRect textArea((int)(leftX), (int)(topY) + (int)(height * 0.7), (int)(leftX) + (int)(width * 0.18),
+    (int)(topY + height));
   ::DrawText(hDC, sunlightStr, sunlightStr.GetLength(), &textArea,
-             DT_SINGLELINE | DT_CENTER | DT_VCENTER);
-  // ::TextOut(hDC, 130, 60, sunlightStr, sunlightStr.GetLength());
+    DT_SINGLELINE | DT_CENTER | DT_VCENTER);
 }
 
 void SeedBank::orderSeed() {

@@ -6,15 +6,14 @@
 IMPLEMENT_DYNCREATE(PeaShooterSingle, Plant)
 
 PeaShooterSingle::PeaShooterSingle(CRuntimeClass* theClass,
-                                   CRuntimeClass* eject, int hp)
-    : Plant(theClass, hp), ejectClass(eject) {}
+  CRuntimeClass* eject, int hp)
+  : Plant(theClass, hp), ejectClass(eject) {}
 
 void PeaShooterSingle::draw(HDC hDC, int xOffset, int yOffset) {
   Plant::draw(hDC);
 }
 
 bool PeaShooterSingle::skillCheck() {
-  //
   auto& rowZombie = theDoc->getYard().getZombieList()[plantPos.x];
   if (!rowZombie.empty()) return true;
   return false;

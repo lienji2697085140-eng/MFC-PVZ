@@ -1,10 +1,11 @@
 #pragma once
+#include "stdafx.h"
 #include "GameEntity.h"
 
 class Sun : public GameElement {
   DECLARE_DYNCREATE(Sun)
 
- public:
+public:
   enum { Flash = 1, NoFlash };
 
   enum {
@@ -17,12 +18,12 @@ class Sun : public GameElement {
 
   const static int LIFE_TIME = 400;
 
- private:
-  int sunValue{25};
+private:
+  int sunValue{ 25 };
   int lifeTime;
-  CPoint finalPoint{0};
+  CPoint finalPoint{ 0 };
 
- public:
+public:
   double jumpParam = 1;
   double xStep = 0;
   double yStep = 0;
@@ -30,7 +31,7 @@ class Sun : public GameElement {
   int moveSpeed = 0;
   bool moveFlg = true;
 
- public:
+public:
   Sun();
 
   void draw(HDC, int xOffset = 0, int yOffset = 0);

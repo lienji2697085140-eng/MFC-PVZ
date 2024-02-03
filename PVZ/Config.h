@@ -14,5 +14,5 @@
 
 // 窗口滑动比例
 #define SLIDING_WINDOW 0
-// 内容显示比例 
-#define ZOOM_FACTOR 0.5
+// 内容显示比例
+#define ZOOM_FACTOR 1

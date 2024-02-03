@@ -51,11 +51,11 @@ void PVZWinApp::gameTickLoop(HWND, UINT, UINT_PTR, DWORD) {
 
   if (Visible::currentGameTick % 700 == 0) {
     // 生成阳光
-    int stX = yard.getWidth() / 6 + rand() % (int)(yard.getWidth() * 0.8);
+    int stX = (int)(yard.getWidth() / 6 + rand() % (int)(yard.getWidth() * 0.8));
     int stY = 80 + rand() % 40;
-    srand(time(NULL));
+    srand((unsigned int)(time(NULL)));
     int lifeTime = 2000 + rand() % 200;
-    POINT finalPoint = {stX, rand() % (int)yard.getHeight() + 150};
+    POINT finalPoint = { stX, rand() % (int)yard.getHeight() + 150 };
     auto sun(std::make_shared<Sun>());
     sun->setLeftX(stX);
     sun->setTopY(stY);
@@ -71,8 +71,8 @@ void PVZWinApp::gameTickLoop(HWND, UINT, UINT_PTR, DWORD) {
     zombie->setLeftX(yard.getWidth() * 0.7);
     int row = rand() % 5;
     zombie->setTopY(yard.getPlantTopY() + row * yard.getPlantHeight() +
-                    yard.getPlantHeight() * (row < 3 ? 0.1 : 0) -
-                    (zombie->getHeight() * 0.35));
+      yard.getPlantHeight() * (row < 3 ? 0.1 : 0) -
+      (zombie->getHeight() * 0.35));
     zombie->addState(Zombie::MOVE);
     zombieList[row].push_back(zombie);
   }
@@ -95,17 +95,17 @@ void PVZWinApp::loadNextFPS() {
   Yard& yard = theDoc->getYard();
   SeedBank& sbank = theDoc->getSeedBank();
 
-  yard.foreach (yard.getPlantMatrix(), [](Yard::plant_iter& iter, int) {
+  yard.foreach(yard.getPlantMatrix(), [](Yard::plant_iter& iter, int) {
     if (*iter) (*iter)->nextAnimateTick();
-  });
+    });
 
-  yard.foreach (yard.getZombieList(), [](Yard::zombie_iter& iter, int row) {
+  yard.foreach(yard.getZombieList(), [](Yard::zombie_iter& iter, int row) {
     (*iter)->nextAnimateTick();
-  });
+    });
 
-  yard.foreach (yard.getEjectList(), [](Yard::ejects_iter& iter, int) {
+  yard.foreach(yard.getEjectList(), [](Yard::ejects_iter& iter, int) {
     (*iter)->nextAnimateTick();
-  });
+    });
 
   auto& sunList = theDoc->getSunList();
   for (auto& sun : sunList) {
@@ -116,8 +116,8 @@ void PVZWinApp::loadNextFPS() {
 BOOL PVZWinApp::InitInstance() {
   // MFCSdi基础代码
   CSingleDocTemplate* pTemplate = new CSingleDocTemplate(
-      IDR_MENU1, RUNTIME_CLASS(PVZDoc), RUNTIME_CLASS(PVZFrameWnd),
-      RUNTIME_CLASS(PVZView));
+    IDR_MENU1, RUNTIME_CLASS(PVZDoc), RUNTIME_CLASS(PVZFrameWnd),
+    RUNTIME_CLASS(PVZView));
   AddDocTemplate(pTemplate);
   OnFileNew();
 
@@ -135,7 +135,7 @@ BOOL PVZWinApp::InitInstance() {
   auto& rc = Visible::rcManage.getResource("Yard", Yard::ImgNoon).at(0);
   // 初始化主窗口
   m_pMainWnd->MoveWindow(0, 0, rc->GetWidth(),
-                         rc->GetHeight() + rc->GetHeight() * 0.1);
+    (int)(rc->GetHeight() + rc->GetHeight() * 0.1));
   m_pMainWnd->ShowWindow(SW_SHOW);
   m_pMainWnd->UpdateWindow();
   return TRUE;

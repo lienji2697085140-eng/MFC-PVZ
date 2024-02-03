@@ -111,6 +111,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -136,7 +137,6 @@
   <ItemGroup>
     <ClInclude Include="Chomper.h" />
     <ClInclude Include="Config.h" />
-    <ClInclude Include="framework.h" />
     <ClInclude Include="GameEntity.h" />
     <ClInclude Include="NormalZombie.h" />
     <ClInclude Include="PeaShooterSingle.h" />
@@ -161,6 +161,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Squash.h" />
+    <ClInclude Include="stdafx.h" />
     <ClInclude Include="Sun.h" />
     <ClInclude Include="SunFlower.h" />
     <ClInclude Include="Visible.h" />

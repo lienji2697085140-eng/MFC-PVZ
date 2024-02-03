@@ -19,14 +19,14 @@ void Sun::draw(HDC hDC, int xOffset, int yOffset) {
   int width = pngs[animateTick]->GetWidth();
   int height = pngs[animateTick]->GetHeight();
 
+  // TODO
   // Visible::draw(hDC);
 
-  pngs[animateTick]->AlphaBlend(hDC, leftX, topY, width, height, 0, 0, width,
-                                height);
+  pngs[animateTick]->AlphaBlend(hDC, (int)(leftX), (int)(topY), (int)(width), (int)(height), 0, 0, (int)(width),
+    (int)(height));
 }
 
 void Sun::update() {
-  // static POINT jumpArr[]{ {1, 1}, {} };
   if (isState(Sun::FLASH)) --lifeTime;
 
   if (topY >= finalPoint.y) {
@@ -37,10 +37,9 @@ void Sun::update() {
   if (topY < finalPoint.y) topY += 1;
   // 阳光跳动
   if (isState(Sun::JUMP)) {
-    int val = sin(jumpParam += 0.15) * 8;
+    int val = (int)(sin(jumpParam += 0.15) * 8);
     topY -= val;
-    // ++leftX;
-    if (jumpParam > 5 /*val < - 6*/) {
+    if (jumpParam > 5.5) {
       cleanState(Sun::JUMP);
       jumpParam = 1;
     }
@@ -60,7 +59,7 @@ void Sun::update() {
 bool Sun::onClick(int cx, int cy) {
   // Sun的图像面积大 单击需要重新计算
   if (cx >= leftX + width / 4 && cx <= leftX + width - width / 4 &&
-      cy >= topY + height / 4 && cy <= topY + height - height / 4) {
+    cy >= topY + height / 4 && cy <= topY + height - height / 4) {
     return true;
   }
   return false;

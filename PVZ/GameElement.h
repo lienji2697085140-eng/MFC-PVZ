@@ -1,13 +1,15 @@
 #pragma once
+#include "stdafx.h"
 #include "Visible.h"
+
 
 class GameElement : public Visible {
   DECLARE_DYNCREATE(GameElement)
 
- protected:
+protected:
   size_t currentState = 0x0;
 
- public:
+public:
   GameElement(CRuntimeClass* msg = nullptr);
 
   // ¶ÔÓ¦×´Ì¬

@@ -1,4 +1,5 @@
 #pragma once
+#include "stdafx.h"
 #include <afxwin.h>
 
 #include <list>
@@ -11,20 +12,20 @@
 class PVZDoc : public CDocument {
   DECLARE_DYNCREATE(PVZDoc)
 
- public:
+public:
   using SunlightList = std::list<std::shared_ptr<Sun>>;
 
- private:
+private:
   // 文档类保存院子信息和玩家信息
   Yard yard;
   Player player;
   SeedBank sbank;
   SunlightList sunList;
 
- public:
+public:
   PVZDoc();
 
- public:
+public:
   Yard& getYard();
   Player& getPlayer();
   SeedBank& getSeedBank();

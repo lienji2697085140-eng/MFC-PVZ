@@ -1,17 +1,18 @@
 #pragma once
+#include "stdafx.h"
 #include "GameElement.h"
 
 class GameEntity : public GameElement {
   DECLARE_DYNCREATE(GameEntity)
 
- public:
+public:
   GameEntity(CRuntimeClass* msg = nullptr, int hp = 0);
 
- protected:
+protected:
   int healthPoint;
-  CRect collisioArea{0};
+  CRect collisioArea{ 0 };
 
- public:
+public:
   virtual bool collisio(const GameEntity& e);
 
   int getHp() { return healthPoint; }

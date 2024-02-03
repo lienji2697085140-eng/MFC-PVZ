@@ -8,12 +8,12 @@ IMPLEMENT_DYNCREATE(Chomper, Plant)
 extern PVZDoc* theDoc;
 
 Chomper::Chomper()
-    : Plant(RUNTIME_CLASS(Chomper), Chomper::HP, Chomper::SKILL_MAX_TIME) {
+  : Plant(RUNTIME_CLASS(Chomper), Chomper::HP, Chomper::SKILL_MAX_TIME) {
   this->skillWaitTime = SKILL_MAX_TIME;
 }
 
 void Chomper::draw(HDC hDC, int xOffset, int yOffset) {
-  Plant::draw(hDC, -(width * 0.05), -(height * 0.4));
+  Plant::draw(hDC, -(int)(width * 0.05), -(int)(height * 0.4));
 }
 
 bool Chomper::skillCheck() {
@@ -47,16 +47,16 @@ void Chomper::skill() {
 }
 
 void Chomper::setPosition() {
-  collisioArea = CRect(leftX + width * 0.2, topY, leftX + width * 0.6,
-                       topY + height * 0.5);
+  collisioArea = CRect((int)(leftX + width * 0.2), (int)topY, (int)(leftX + width * 0.6),
+    (int)(topY + height * 0.5));
 }
 
 bool Chomper::collisio(const GameEntity& e) {
-  CRect tgCheckArea{e.getcollisioArea()}, thisArea{collisioArea};
+  CRect tgCheckArea{ e.getcollisioArea() }, thisArea{ collisioArea };
   return !(thisArea.top >= tgCheckArea.bottom ||
-           thisArea.bottom <= tgCheckArea.top ||
-           thisArea.left >= tgCheckArea.right ||
-           thisArea.right + getWidth() * 0.2 <= tgCheckArea.left);
+    thisArea.bottom <= tgCheckArea.top ||
+    thisArea.left >= tgCheckArea.right ||
+    thisArea.right + getWidth() * 0.2 <= tgCheckArea.left);
 }
 
 void Chomper::stateSwitch(bool isHalf) {

@@ -21,12 +21,12 @@ void Player::selectPlant(Yard& yard, SeedBank& sbank, CPoint& point) {
   // 处理SeedBank部分
   for (auto& seed : sbank.getSeedElements()) {
     if (seed.onClick(point.x, point.y) && !getCurrentPlant() &&
-        sbank.getSunlight() >= seed.getPrice() && seed.getWaitingTime() == 0 &&
-        seed.isOnlyState(Seed::READY)) {
+      sbank.getSunlight() >= seed.getPrice() && seed.getWaitingTime() == 0 &&
+      seed.isOnlyState(Seed::READY)) {
       CRuntimeClass* factory = seed.getPlantClass();
       // 利用动态创建机制创建对象
       this->setCurrentPlant(
-          std::shared_ptr<Plant>((Plant*)factory->CreateObject()));
+        std::shared_ptr<Plant>((Plant*)factory->CreateObject()));
       seed.addState(Seed::SELECTED);
       return;
     }
@@ -48,11 +48,11 @@ void Player::selectPlant(Yard& yard, SeedBank& sbank, CPoint& point) {
   }
   // 取消种植
   sbank.foreachAllSeed(
-      [&](Seed& seed) {
-        seed.cleanState(Seed::SELECTED);
-        currentPlant.reset();
-      },
-      plant->GetRuntimeClass());
+    [&](Seed& seed) {
+      seed.cleanState(Seed::SELECTED);
+  currentPlant.reset();
+    },
+    plant->GetRuntimeClass());
 }
 
 void Player::placementPlant(Yard& yard, SeedBank& sbank, int row, int col) {
@@ -61,7 +61,7 @@ void Player::placementPlant(Yard& yard, SeedBank& sbank, int row, int col) {
     AfxMessageBox("这里已经有植物了");
     // 取消对应seed的选中状态
     sbank.foreachAllSeed([](Seed& seed) { seed.cleanState(Seed::SELECTED); },
-                         getCurrentPlant()->GetRuntimeClass());
+      getCurrentPlant()->GetRuntimeClass());
     setCurrentPlant(nullptr);
     return;
   }
@@ -69,46 +69,46 @@ void Player::placementPlant(Yard& yard, SeedBank& sbank, int row, int col) {
   auto& plant = plantMatrix[row][col] = getCurrentPlant();
   // 扣除阳光 这里需要动态判断植物类型
   theDoc->getSeedBank().foreachAllSeed(
-      [&](Seed& s) { sbank.setSunlight(sbank.getSunlight() - s.getPrice()); },
-      plant->GetRuntimeClass());
-  plant->setPlantPos({row, col});
+    [&](Seed& s) { sbank.setSunlight(sbank.getSunlight() - s.getPrice()); },
+    plant->GetRuntimeClass());
+  plant->setPlantPos({ row, col });
   plant->setLeftX(yard.getPlantLeftX() + col * yard.getPlantWidth() +
-                  yard.getPlantWidth() * 0.2);
+    yard.getPlantWidth() * 0.2);
   plant->setTopY(yard.getPlantTopY() + row * yard.getPlantHeight() +
-                 yard.getPlantHeight() * (row < 3 ? 0.1 : 0));
+    yard.getPlantHeight() * (row < 3 ? 0.1 : 0));
   plant->setMapState(Plant::DefaultDynamic);
   // 结束种植
   sbank.foreachAllSeed(
-      [](Seed& seed) {
-        seed.wait();
-        seed.cleanState(Seed::SELECTED);
-      },
-      plant->GetRuntimeClass());
+    [](Seed& seed) {
+      seed.wait();
+  seed.cleanState(Seed::SELECTED);
+    },
+    plant->GetRuntimeClass());
   // 清除选中的植物
   currentPlant.reset();
 }
 
 void Player::collectSun(Yard& yard, SeedBank& sbank,
-                        std::list<std::shared_ptr<Sun>>& sunList,
-                        CPoint& point) {
+  std::list<std::shared_ptr<Sun>>& sunList,
+  CPoint& point) {
   for (auto iter = sunList.begin(); iter != sunList.end(); ++iter) {
     auto& sun = *iter;
     if (sun->onClick(point.x, point.y)) {
       sbank.setSunlight(sbank.getSunlight() + sun->getSunValue());
       if (!sun->isState(Sun::COLLECTED)) {
         (*iter)->setState(Sun::COLLECTED);
-        int leftX = (*iter)->getLeftX();
-        int topY = (*iter)->getTopY();
+        int leftX = (int)((*iter)->getLeftX());
+        int topY = (int)((*iter)->getTopY());
         // 设置偏移参数
         // yard.getWidth() / 6 是seedbank最左侧的位置
         auto& currSun = *iter;
         currSun->moveSpeed = 20;  // (yard.getWidth() * 0.6) * 0.01;
-        currSun->distance = sqrt(
-            (topY * topY) + pow(yard.getWidth() / 7 - currSun->getLeftX(), 2));
+        currSun->distance = (int)(sqrt(
+          (topY * topY) + pow(yard.getWidth() / 7 - currSun->getLeftX(), 2)));
         currSun->xStep = (currSun->getLeftX() - yard.getWidth() / 7) /
-                         (currSun->distance / currSun->moveSpeed);
+          (currSun->distance / currSun->moveSpeed);
         currSun->yStep = (currSun->getTopY() + 100) /
-                         (currSun->distance / currSun->moveSpeed);
+          (currSun->distance / currSun->moveSpeed);
         // if (leftX < topY) (*iter)->moveFlg = false;
         break;
       }
@@ -136,9 +136,9 @@ void Player::drawCurrentPlant(HDC hDC, Yard& yard) {
     if (yard.getPlantMatrix()[newPos.x][newPos.y]) break;
     curr->setState(Plant::VIRTUAL);
     curr->setLeftX(yard.getPlantLeftX() + pos.y * yard.getPlantWidth() +
-                   yard.getPlantWidth() * 0.2);
+      yard.getPlantWidth() * 0.2);
     curr->setTopY(yard.getPlantTopY() + pos.x * yard.getPlantHeight() +
-                  yard.getPlantHeight() * (pos.x < 3 ? 0.1 : 0));
+      yard.getPlantHeight() * (pos.x < 3 ? 0.1 : 0));
     curr->draw(hDC);
     curr->cleanState(Plant::VIRTUAL);
     break;
@@ -147,7 +147,8 @@ void Player::drawCurrentPlant(HDC hDC, Yard& yard) {
   if (curr->GetRuntimeClass() == RUNTIME_CLASS(Chomper)) {
     curr->setLeftX(currPos.x - curr->getWidth() * 0.25);
     curr->setTopY(currPos.y - curr->getHeight() * 0.4);
-  } else {
+  }
+  else {
     curr->setLeftX(currPos.x - curr->getWidth() * 0.5);
     curr->setTopY(currPos.y - curr->getHeight() * 0.8);
   }

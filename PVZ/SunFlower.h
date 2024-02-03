@@ -1,13 +1,14 @@
 #pragma once
+#include "stdafx.h"
 #include "Plant.h"
 
 class SunFlower : public Plant {
   DECLARE_DYNCREATE(SunFlower)
 
- public:
+public:
   enum MapStatus { Dynamic = 1, DynamicBright };
 
- public:
+public:
   // 植物基本属性
   static constexpr int HP = 300;
   static constexpr int PLANT_TIME = 200;
@@ -15,10 +16,10 @@ class SunFlower : public Plant {
   // 15秒产生一次阳光
   static constexpr int SKILL_MAX_TIME = 1500;
 
- public:
+public:
   SunFlower();
 
- public:
+public:
   virtual void stateSwitch(bool isHalf);
 
   virtual void draw(HDC hDC, int xOffset = 0, int yOffset = 0);
