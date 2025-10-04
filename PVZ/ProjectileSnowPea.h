@@ -7,8 +7,9 @@ class ProjectileSnowPea : public ProjectilePea
   DECLARE_DYNCREATE(ProjectileSnowPea)
 
 public:
-  // 移动速度
+  // 艊膯艣呕脣女艣膶
   static constexpr int step = 3;
+  static constexpr int hurt = 50;
 
 public:
 
