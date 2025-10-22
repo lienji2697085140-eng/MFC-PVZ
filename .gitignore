@@ -1,9 +1,52 @@
-*.iml
-.gradle
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
-.DS_Store
-/build
-/captures
-.externalNativeBuild
+# Visual Studio 文件和目录
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.vcxproj.user
+
+# 编译输出目录
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+
+# Visual Studio 数据库文件
+*.db
+*.db-shm
+*.db-wal
+*.vsidx
+*.VC.db
+*.VC.VC.opendb
+
+# 预编译头和中间文件
+*.pch
+*.ilk
+*.pdb
+*.idb
+*.tlog
+*.log
+ipch/
+
+# 其他临时文件
+*.aps
+*.ncb
+*.opt
+*.plg
+*.clw
+*.map
+*.res
+*.sbr
+*.tlb
+*.tlh
+*.bak
+*.tmp
+
+# MFC 资源文件临时文件
+*.rc2
