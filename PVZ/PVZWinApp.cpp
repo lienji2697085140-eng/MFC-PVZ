@@ -49,7 +49,7 @@ void PVZWinApp::gameTickLoop(HWND, UINT, UINT_PTR, DWORD) {
 
   yard.update();
 
-  if (Visible::currentGameTick % 700 == 0) {
+  if (Visible::currentGameTick % 70 == 0) {
     // 生成阳光
     int stX = (int)(yard.getWidth() / 6 + rand() % (int)(yard.getWidth() * 0.8));
     int stY = 80 + rand() % 40;
@@ -64,7 +64,7 @@ void PVZWinApp::gameTickLoop(HWND, UINT, UINT_PTR, DWORD) {
     sunList.push_front(sun);
   }
 
-  if (Visible::currentGameTick % 500 == 0) {
+  if (Visible::currentGameTick % 50 == 0) {
     // 生成僵尸
     auto zombie(std::make_shared<NormalZombie>(RUNTIME_CLASS(NormalZombie)));
     zombie->setMapState(Zombie::MoveDynamic);
