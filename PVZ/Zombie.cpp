@@ -20,7 +20,41 @@ void Zombie::draw(HDC hDC, int xOffset, int yOffset) {
         CImage img;
     }
     else {
-        rc[animateTick]->Draw(hDC, (int)(leftX), (int)(topY));
+        if (isState(Zombie::SLOWED)) {
+            // 创建临时图像用于处理颜色
+            CImage tempImage;
+            tempImage.Create(rc[animateTick]->GetWidth(), rc[animateTick]->GetHeight(), 32);
+
+            // 将原图像绘制到临时图像上
+            HDC tempDC = tempImage.GetDC();
+            rc[animateTick]->Draw(tempDC, 0, 0);
+
+            // 处理像素颜色 - 转换为深蓝色调
+            for (int y = 0; y < tempImage.GetHeight(); y++) {
+                for (int x = 0; x < tempImage.GetWidth(); x++) {
+                    COLORREF color = tempImage.GetPixel(x, y);
+                    if (color != RGB(0, 0, 0)) { // 跳过纯黑色像素（通常是透明部分）
+                        BYTE r = GetRValue(color);
+                        BYTE g = GetGValue(color);
+                        BYTE b = GetBValue(color);
+
+                        // 增强蓝色，减弱红色和绿色
+                        b = min(255, b + 100);
+                        r = max(0, r - 50);
+                        g = max(0, g - 50);
+
+                        tempImage.SetPixel(x, y, RGB(r, g, b));
+                    }
+                }
+            }
+            tempImage.ReleaseDC();
+
+            // 绘制处理后的图像
+            tempImage.Draw(hDC, (int)(leftX), (int)(topY));
+        }
+        else {
+            rc[animateTick]->Draw(hDC, (int)(leftX), (int)(topY));
+        }
     }
 }
 
@@ -69,7 +103,7 @@ void Zombie::attack() {
 // 新增方法实现
 void Zombie::applySlowEffect(int duration) {
     slowTimer = duration;
-    speed = originalSpeed * 0.5; // 速度减半
+    speed = originalSpeed * 0.3; // 速度减半
     addState(Zombie::SLOWED); // 添加减速状态
 }
 
