@@ -24,7 +24,7 @@ void PeaShooterSingle::skill() {
     auto& ejects = yard.getEjectList();
 
     // 阶梯式水平间距：每颗豌豆比前一颗更靠前
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 10; i++) {
         std::shared_ptr<Ejects> pea((Ejects*)ejectClass->CreateObject());
         pea->setState(Ejects::DEFAULT);
 
@@ -32,7 +32,7 @@ void PeaShooterSingle::skill() {
         int horizontalOffset = i * 30; // 每颗豌豆比前一颗远30像素
 
         pea->setLeftX(leftX + width * 0.9 + horizontalOffset);
-        pea->setTopY(topY + height * 0.2 + (i * 3) - 3);
+        pea->setTopY(topY /*+ height * 0.2 + (i * 3) - 3*/);
 
         ejects[row].push_front(pea);
     }
