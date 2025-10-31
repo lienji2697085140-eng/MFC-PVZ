@@ -64,7 +64,7 @@ void PVZWinApp::gameTickLoop(HWND, UINT, UINT_PTR, DWORD) {
     sunList.push_front(sun);
   }
 
-  if (Visible::currentGameTick % 500 == 0) {
+  if (Visible::currentGameTick % 50 == 0) {
     // Éú³É½©Ê¬
     auto zombie(std::make_shared<NormalZombie>(RUNTIME_CLASS(NormalZombie)));
     zombie->setMapState(Zombie::MoveDynamic);
