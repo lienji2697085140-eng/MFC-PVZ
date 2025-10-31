@@ -1,24 +1,60 @@
+#include "stdafx.h"
 #include "Zombie.h"
-#include "GameElement.h"
-#include "PVZDoc.h"
-#include <vector>
-#include <cstdlib>
-#include <ctime>
-#include <algorithm>
 
 IMPLEMENT_DYNCREATE(Zombie, GameEntity)
 
 extern PVZDoc* theDoc;
 
+namespace {
+    struct IceEffect {
+        CRect area;
+        int timer;
+        int angle;
+        int colorPhase; // 颜色阶段：0-2，每秒一个阶段
+    };
+
+    std::vector<IceEffect> g_iceEffects;
+    const int ICE_TIME = 360; // 3秒（60帧/秒 × 3秒）
+}
+
 Zombie::Zombie(CRuntimeClass* classMsg, int hp, double moveSpeed, int h)
-    : GameEntity(classMsg, hp),
-    speed(moveSpeed),
-    hurt(h),
-    healthPoint(hp),
-    originalSpeed(moveSpeed),
-    slowTimer(0)
-{
-    std::srand(static_cast<unsigned>(std::time(nullptr))); // 初始化随机种子
+    : GameEntity(classMsg, hp), speed(moveSpeed), hurt(h), healthPoint(hp),
+    originalSpeed(moveSpeed), slowTimer(0) {
+}
+
+// 根据时间获取颜色（从深蓝到浅蓝渐变）
+COLORREF GetIceColor(int colorPhase, int frameInPhase) {
+    // 每秒60帧，每个颜色阶段60帧
+    float progress = frameInPhase / 60.0f; // 当前阶段内的进度（0.0-1.0）
+
+    // 三个颜色阶段：深蓝 -> 中蓝 -> 浅蓝
+    COLORREF colors[3] = {
+        RGB(0, 50, 150),   // 深蓝（第1秒）
+        RGB(50, 100, 200),  // 中蓝（第2秒）
+        RGB(100, 150, 255)  // 浅蓝（第3秒）
+    };
+
+    if (colorPhase >= 2) {
+        return colors[2]; // 最后一秒保持浅蓝色
+    }
+
+    // 颜色插值
+    COLORREF startColor = colors[colorPhase];
+    COLORREF endColor = colors[colorPhase + 1];
+
+    int r1 = GetRValue(startColor);
+    int g1 = GetGValue(startColor);
+    int b1 = GetBValue(startColor);
+
+    int r2 = GetRValue(endColor);
+    int g2 = GetGValue(endColor);
+    int b2 = GetBValue(endColor);
+
+    int r = r1 + (int)((r2 - r1) * progress);
+    int g = g1 + (int)((g2 - g1) * progress);
+    int b = b1 + (int)((b2 - b1) * progress);
+
+    return RGB(r, g, b);
 }
 
 void Zombie::draw(HDC hDC, int xOffset, int yOffset) {
@@ -29,102 +65,98 @@ void Zombie::draw(HDC hDC, int xOffset, int yOffset) {
         cleanState(Zombie::HURT);
     }
     else {
-        // 先绘制原始僵尸
+        // 绘制原始僵尸
         rc[animateTick]->Draw(hDC, (int)(leftX), (int)(topY));
+    }
 
-        // 减速状态：添加冰霜粒子效果
-        if (isState(Zombie::SLOWED)) {
-            // 创建蓝色和白色画刷
-            HBRUSH hBlueBrush = CreateSolidBrush(RGB(150, 200, 255));
-            HBRUSH hWhiteBrush = CreateSolidBrush(RGB(230, 240, 255));
-            HPEN hTransparentPen = (HPEN)GetStockObject(NULL_PEN);
+    // 绘制所有冰晶效果
+    for (auto& effect : g_iceEffects) {
+        effect.angle = (effect.angle + 6) % 360; // 每帧旋转6度
 
-            // 保存旧对象
-            HBRUSH hOldBrush = (HBRUSH)SelectObject(hDC, hBlueBrush);
-            HPEN hOldPen = (HPEN)SelectObject(hDC, hTransparentPen);
+        // 计算颜色阶段和帧数
+        int totalFrames = ICE_TIME - effect.timer; // 已播放的帧数
+        effect.colorPhase = totalFrames / 60; // 每秒一个阶段（0-2）
+        int frameInPhase = totalFrames % 60;  // 当前阶段内的帧数
 
-            int zombieWidth = getWidth();
-            int zombieHeight = getHeight();
-            int borderOffset = 5; // 距离边框的偏移量
+        COLORREF iceColor = GetIceColor(effect.colorPhase, frameInPhase);
 
-            // 在僵尸周围生成25-35个小冰晶
-            int iceCount = 25 + (std::rand() % 11); // 25到35个
+        // 绘制旋转的小冰晶
+        HPEN hPen = CreatePen(PS_SOLID, 2, iceColor);
+        HPEN hOldPen = (HPEN)SelectObject(hDC, hPen);
+        HBRUSH hOldBrush = (HBRUSH)SelectObject(hDC, GetStockObject(NULL_BRUSH));
 
-            for (int i = 0; i < iceCount; ++i) {
-                // 随机分布在边框周围
-                int edge = std::rand() % 4; // 0=上,1=右,2=下,3=左
-                int x = 0, y = 0;
-                int size = 0;
+        int centerX = (effect.area.left + effect.area.right) / 2;
+        int centerY = (effect.area.top + effect.area.bottom) / 2;
+        int size = 6; // 小冰晶大小
 
-                switch (edge) {
-                case 0: // 上边
-                    x = (int)leftX + borderOffset + (std::rand() % (zombieWidth - 2 * borderOffset));
-                    y = (int)topY - 8 + (std::rand() % 6);
-                    size = 3 + (std::rand() % 5); // 3-7像素
-                    break;
-                case 1: // 右边
-                    x = (int)leftX + zombieWidth - borderOffset + (std::rand() % 6);
-                    y = (int)topY + borderOffset + (std::rand() % (zombieHeight - 2 * borderOffset));
-                    size = 4 + (std::rand() % 6); // 4-9像素
-                    break;
-                case 2: // 下边
-                    x = (int)leftX + borderOffset + (std::rand() % (zombieWidth - 2 * borderOffset));
-                    y = (int)topY + zombieHeight - borderOffset + (std::rand() % 6);
-                    size = 3 + (std::rand() % 5); // 3-7像素
-                    break;
-                case 3: // 左边
-                    x = (int)leftX - 8 + (std::rand() % 6);
-                    y = (int)topY + borderOffset + (std::rand() % (zombieHeight - 2 * borderOffset));
-                    size = 4 + (std::rand() % 6); // 4-9像素
-                    break;
-                }
+        // 绘制8个小冰晶围绕僵尸旋转
+        for (int i = 0; i < 8; i++) {
+            double angle = (effect.angle + i * 45) * 3.14159 / 180.0;
+            int offsetX = (int)(effect.area.Width() * 0.35 * cos(angle));
+            int offsetY = (int)(effect.area.Height() * 0.35 * sin(angle));
 
-                // 随机选择蓝色或白色
-                if (std::rand() % 3 == 0) { // 1/3概率白色
-                    SelectObject(hDC, hWhiteBrush);
-                }
-                else {
-                    SelectObject(hDC, hBlueBrush);
-                }
+            int x = centerX + offsetX - size / 2;
+            int y = centerY + offsetY - size / 2;
 
-                // 绘制小冰晶（圆形或椭圆形）
-                if (std::rand() % 2 == 0) {
-                    // 圆形
-                    Ellipse(hDC, x, y, x + size, y + size);
-                }
-                else {
-                    // 椭圆形（随机拉伸）
-                    int stretch = 1 + (std::rand() % 3);
-                    Ellipse(hDC, x, y, x + size, y + size / stretch);
-                }
+            // 绘制小菱形冰晶
+            POINT points[5];
+            points[0] = { x + size / 2, y };
+            points[1] = { x + size, y + size / 2 };
+            points[2] = { x + size / 2, y + size };
+            points[3] = { x, y + size / 2 };
+            points[4] = points[0];
 
-                // 40%概率添加冰刺
-                if (std::rand() % 100 < 40) {
-                    MoveToEx(hDC, x + size / 2, y + size / 2, NULL);
-                    int length = 3 + (std::rand() % 5);
-                    LineTo(hDC,
-                        x + size / 2 + (std::rand() % (length * 2) - length),
-                        y + size / 2 + (std::rand() % (length * 2) - length));
-                }
-            }
-
-            // 恢复旧对象并清理资源
-            SelectObject(hDC, hOldBrush);
-            SelectObject(hDC, hOldPen);
-            DeleteObject(hBlueBrush);
-            DeleteObject(hWhiteBrush);
+            Polyline(hDC, points, 5);
         }
+
+        SelectObject(hDC, hOldPen);
+        DeleteObject(hPen);
     }
 }
 
 void Zombie::update() {
-    updateSlowEffect();
+    // 减速效果更新
+    if (slowTimer > 0) {
+        slowTimer--;
+        if (slowTimer == 0) {
+            speed = originalSpeed;
+            cleanState(Zombie::SLOWED);
+        }
+    }
 
+    // 移动逻辑
     auto& yard = theDoc->getYard();
     if (isState(Zombie::MOVE)) {
         leftX -= yard.getWidth() * speed;
     }
 
+    // 检测是否接触其他被减速僵尸的冰晶效果区域
+    if (!isState(Zombie::SLOWED)) {
+        CRect zombieRect((int)leftX, (int)topY,
+            (int)(leftX + getWidth()),
+            (int)(topY + getHeight()));
+
+        for (const auto& effect : g_iceEffects) {
+            CRect intersect;
+            if (intersect.IntersectRect(&zombieRect, &effect.area)) {
+                applySlowEffect(ICE_TIME);
+                break;
+            }
+        }
+    }
+
+    // 更新冰晶效果
+    for (auto it = g_iceEffects.begin(); it != g_iceEffects.end(); ) {
+        it->timer--;
+        if (it->timer <= 0) {
+            it = g_iceEffects.erase(it);
+        }
+        else {
+            ++it;
+        }
+    }
+
+    // 植物碰撞检测
     auto& plants = theDoc->getYard().getPlantMatrix();
     if (!targetPlant) {
         theDoc->getYard().foreach(plants, [&](Yard::plant_iter& plantIter, int) {
@@ -166,17 +198,21 @@ void Zombie::attack() {
 void Zombie::applySlowEffect(int duration) {
     if (slowTimer < duration) {
         slowTimer = duration;
-        speed = originalSpeed * 0.3;
+        speed = originalSpeed * 0.3; // 速度减半
         addState(Zombie::SLOWED);
-    }
-}
 
-void Zombie::updateSlowEffect() {
-    if (slowTimer > 0) {
-        slowTimer--;
-        if (slowTimer == 0) {
-            speed = originalSpeed;
-            cleanState(Zombie::SLOWED);
-        }
+        // 创建冰晶效果区域
+        IceEffect newEffect;
+        int width = getWidth();
+        int height = getHeight();
+
+        newEffect.area = CRect(
+            (int)leftX - 30, (int)topY - 30,
+            (int)(leftX + width + 30), (int)(topY + height + 30)
+        );
+        newEffect.timer = duration;
+        newEffect.angle = 0;
+        newEffect.colorPhase = 0; // 从第0阶段开始
+        g_iceEffects.push_back(newEffect);
     }
 }
