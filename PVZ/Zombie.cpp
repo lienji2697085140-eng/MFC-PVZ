@@ -14,7 +14,7 @@ namespace {
     };
 
     std::vector<IceEffect> g_iceEffects;
-    const int ICE_TIME = 360; // 3√Î£®60÷°/√Î °¡ 3√Î£©
+    const int ICE_TIME = 720; // 3√Î£®60÷°/√Î °¡ 3√Î£©
 }
 
 Zombie::Zombie(CRuntimeClass* classMsg, int hp, double moveSpeed, int h)
