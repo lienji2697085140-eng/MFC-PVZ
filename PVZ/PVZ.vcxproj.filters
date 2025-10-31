@@ -188,9 +188,6 @@
     <ClCompile Include="Visible.cpp">
       <Filter>源文件\base</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>源文件\other</Filter>
-    </ClCompile>
     <ClCompile Include="Seed.cpp">
       <Filter>源文件\other</Filter>
     </ClCompile>
@@ -213,6 +210,9 @@
       <Filter>源文件\plant</Filter>
     </ClCompile>
     <ClCompile Include="Squash.cpp">
+      <Filter>源文件\plant</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
       <Filter>源文件\plant</Filter>
     </ClCompile>
   </ItemGroup>
