@@ -2,23 +2,24 @@
 #include "GameElement.h"
 #include "PVZDoc.h"
 #include <vector>
-#include <cstdlib>
-#include <ctime>
 #include <algorithm>
 
 IMPLEMENT_DYNCREATE(Zombie, GameEntity)
 
 extern PVZDoc* theDoc;
 
+// 全局变量：存储被减速僵尸的蓝色方框信息
+struct SlowEffectArea {
+    CRect area;
+    int duration;
+    int timer;
+};
+static std::vector<SlowEffectArea> g_slowEffectAreas;
+static const int SLOW_AREA_DURATION = 180; // 蓝色方框持续180帧（3秒）
+
 Zombie::Zombie(CRuntimeClass* classMsg, int hp, double moveSpeed, int h)
-    : GameEntity(classMsg, hp),
-    speed(moveSpeed),
-    hurt(h),
-    healthPoint(hp),
-    originalSpeed(moveSpeed),
-    slowTimer(0)
-{
-    std::srand(static_cast<unsigned>(std::time(nullptr))); // 初始化随机种子
+    : GameEntity(classMsg, hp), speed(moveSpeed), hurt(h), healthPoint(hp),
+    originalSpeed(moveSpeed), slowTimer(0) {
 }
 
 void Zombie::draw(HDC hDC, int xOffset, int yOffset) {
@@ -29,92 +30,70 @@ void Zombie::draw(HDC hDC, int xOffset, int yOffset) {
         cleanState(Zombie::HURT);
     }
     else {
-        // 先绘制原始僵尸
+        // 绘制原始僵尸
         rc[animateTick]->Draw(hDC, (int)(leftX), (int)(topY));
 
-        // 减速状态：添加冰霜粒子效果
+        // 减速状态：添加蓝色效果
         if (isState(Zombie::SLOWED)) {
-            // 创建蓝色和白色画刷
-            HBRUSH hBlueBrush = CreateSolidBrush(RGB(150, 200, 255));
-            HBRUSH hWhiteBrush = CreateSolidBrush(RGB(230, 240, 255));
-            HPEN hTransparentPen = (HPEN)GetStockObject(NULL_PEN);
+            // 绘制蓝色半透明覆盖层
+            HDC memDC = CreateCompatibleDC(hDC);
+            int width = rc[animateTick]->GetWidth();
+            int height = rc[animateTick]->GetHeight();
 
-            // 保存旧对象
-            HBRUSH hOldBrush = (HBRUSH)SelectObject(hDC, hBlueBrush);
-            HPEN hOldPen = (HPEN)SelectObject(hDC, hTransparentPen);
+            HBITMAP hBitmap = CreateCompatibleBitmap(hDC, width, height);
+            HBITMAP hOldBitmap = (HBITMAP)SelectObject(memDC, hBitmap);
 
-            int zombieWidth = getWidth();
-            int zombieHeight = getHeight();
-            int borderOffset = 5; // 距离边框的偏移量
+            BLENDFUNCTION blend = { AC_SRC_OVER, 0, 80, 0 };
+            HBRUSH hBlueBrush = CreateSolidBrush(RGB(100, 150, 255));
+            HBRUSH hOldBrush = (HBRUSH)SelectObject(memDC, hBlueBrush);
 
-            // 在僵尸周围生成25-35个小冰晶
-            int iceCount = 25 + (std::rand() % 11); // 25到35个
+            SelectObject(memDC, GetStockObject(NULL_PEN));
+            Rectangle(memDC, 0, 0, width, height);
 
-            for (int i = 0; i < iceCount; ++i) {
-                // 随机分布在边框周围
-                int edge = std::rand() % 4; // 0=上,1=右,2=下,3=左
-                int x = 0, y = 0;
-                int size = 0;
+            AlphaBlend(hDC, (int)leftX, (int)topY, width, height,
+                memDC, 0, 0, width, height, blend);
 
-                switch (edge) {
-                case 0: // 上边
-                    x = (int)leftX + borderOffset + (std::rand() % (zombieWidth - 2 * borderOffset));
-                    y = (int)topY - 8 + (std::rand() % 6);
-                    size = 3 + (std::rand() % 5); // 3-7像素
-                    break;
-                case 1: // 右边
-                    x = (int)leftX + zombieWidth - borderOffset + (std::rand() % 6);
-                    y = (int)topY + borderOffset + (std::rand() % (zombieHeight - 2 * borderOffset));
-                    size = 4 + (std::rand() % 6); // 4-9像素
-                    break;
-                case 2: // 下边
-                    x = (int)leftX + borderOffset + (std::rand() % (zombieWidth - 2 * borderOffset));
-                    y = (int)topY + zombieHeight - borderOffset + (std::rand() % 6);
-                    size = 3 + (std::rand() % 5); // 3-7像素
-                    break;
-                case 3: // 左边
-                    x = (int)leftX - 8 + (std::rand() % 6);
-                    y = (int)topY + borderOffset + (std::rand() % (zombieHeight - 2 * borderOffset));
-                    size = 4 + (std::rand() % 6); // 4-9像素
-                    break;
-                }
-
-                // 随机选择蓝色或白色
-                if (std::rand() % 3 == 0) { // 1/3概率白色
-                    SelectObject(hDC, hWhiteBrush);
-                }
-                else {
-                    SelectObject(hDC, hBlueBrush);
-                }
-
-                // 绘制小冰晶（圆形或椭圆形）
-                if (std::rand() % 2 == 0) {
-                    // 圆形
-                    Ellipse(hDC, x, y, x + size, y + size);
-                }
-                else {
-                    // 椭圆形（随机拉伸）
-                    int stretch = 1 + (std::rand() % 3);
-                    Ellipse(hDC, x, y, x + size, y + size / stretch);
-                }
-
-                // 40%概率添加冰刺
-                if (std::rand() % 100 < 40) {
-                    MoveToEx(hDC, x + size / 2, y + size / 2, NULL);
-                    int length = 3 + (std::rand() % 5);
-                    LineTo(hDC,
-                        x + size / 2 + (std::rand() % (length * 2) - length),
-                        y + size / 2 + (std::rand() % (length * 2) - length));
-                }
-            }
-
-            // 恢复旧对象并清理资源
-            SelectObject(hDC, hOldBrush);
-            SelectObject(hDC, hOldPen);
+            SelectObject(memDC, hOldBrush);
             DeleteObject(hBlueBrush);
-            DeleteObject(hWhiteBrush);
+            SelectObject(memDC, hOldBitmap);
+            DeleteObject(hBitmap);
+            DeleteDC(memDC);
+
+            // 绘制蓝色方框
+            HPEN hBluePen = CreatePen(PS_SOLID, 3, RGB(0, 100, 255));
+            HPEN hOldPen = (HPEN)SelectObject(hDC, hBluePen);
+            HBRUSH hOldBrush2 = (HBRUSH)SelectObject(hDC, GetStockObject(NULL_BRUSH));
+
+            // 方框比僵尸稍大
+            CRect effectArea(
+                (int)leftX - 10,
+                (int)topY - 10,
+                (int)(leftX + width + 10),
+                (int)(topY + height + 10)
+            );
+            Rectangle(hDC, effectArea.left, effectArea.top, effectArea.right, effectArea.bottom);
+
+            SelectObject(hDC, hOldBrush2);
+            SelectObject(hDC, hOldPen);
+            DeleteObject(hBluePen);
         }
     }
+
+    // 绘制所有活跃的减速区域（调试用）
+#ifdef _DEBUG
+    for (const auto& effect : g_slowEffectAreas) {
+        HPEN hDebugPen = CreatePen(PS_DASH, 2, RGB(0, 200, 255));
+        HPEN hOldPen = (HPEN)SelectObject(hDC, hDebugPen);
+        HBRUSH hOldBrush = (HBRUSH)SelectObject(hDC, GetStockObject(NULL_BRUSH));
+
+        Rectangle(hDC, effect.area.left, effect.area.top,
+            effect.area.right, effect.area.bottom);
+
+        SelectObject(hDC, hOldBrush);
+        SelectObject(hDC, hOldPen);
+        DeleteObject(hDebugPen);
+    }
+#endif
 }
 
 void Zombie::update() {
@@ -123,6 +102,32 @@ void Zombie::update() {
     auto& yard = theDoc->getYard();
     if (isState(Zombie::MOVE)) {
         leftX -= yard.getWidth() * speed;
+    }
+
+    // 检测是否接触其他被减速僵尸的蓝色方框
+    if (!isState(Zombie::SLOWED)) {
+        CRect zombieRect((int)leftX, (int)topY,
+            (int)(leftX + getWidth()),
+            (int)(topY + getHeight()));
+
+        for (const auto& effect : g_slowEffectAreas) {
+            CRect intersect;
+            if (intersect.IntersectRect(&zombieRect, &effect.area)) {
+                applySlowEffect(SLOW_AREA_DURATION);
+                break;
+            }
+        }
+    }
+
+    // 更新减速区域
+    for (auto it = g_slowEffectAreas.begin(); it != g_slowEffectAreas.end(); ) {
+        it->timer--;
+        if (it->timer <= 0) {
+            it = g_slowEffectAreas.erase(it);
+        }
+        else {
+            ++it;
+        }
     }
 
     auto& plants = theDoc->getYard().getPlantMatrix();
@@ -166,8 +171,22 @@ void Zombie::attack() {
 void Zombie::applySlowEffect(int duration) {
     if (slowTimer < duration) {
         slowTimer = duration;
-        speed = originalSpeed * 0.3;
+        speed = originalSpeed * 0.5; // 速度减半
         addState(Zombie::SLOWED);
+
+        // 创建蓝色方框效果区域
+        SlowEffectArea newEffect;
+        int width = getWidth();
+        int height = getHeight();
+        newEffect.area = CRect(
+            (int)leftX - 15,
+            (int)topY - 15,
+            (int)(leftX + width + 15),
+            (int)(topY + height + 15)
+        );
+        newEffect.duration = SLOW_AREA_DURATION;
+        newEffect.timer = SLOW_AREA_DURATION;
+        g_slowEffectAreas.push_back(newEffect);
     }
 }
 
