@@ -1,15 +1,24 @@
 #pragma once
-#include "stdafx.h"
-#include <afxwin.h>
+
+#include "PVZDoc.h"
 
 class PVZView : public CView {
-  DECLARE_DYNCREATE(PVZView)
-    DECLARE_MESSAGE_MAP()
+protected:
+	DECLARE_DYNCREATE(PVZView)
+
 public:
-  // 重载OnDraw
-  virtual void OnDraw(CDC*);
-  afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-  afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-  void OnSelect(UINT nFlags, CPoint point);
-  void OnPlace(UINT nFlags, CPoint point);
+	virtual void OnDraw(CDC* pDC);
+
+protected:
+	// 新增：绘制鼠标坐标函数
+	void DrawMouseCoordinates(CDC* cDC);
+
+protected:
+	DECLARE_MESSAGE_MAP()
+
+public:
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnSelect(UINT nFlags, CPoint point);
+	afx_msg void OnPlace(UINT nFlags, CPoint point);
 };
