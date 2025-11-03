@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PVZDoc.h"
+#include "PVZWinApp.h"  // 添加这行，包含游戏状态
 
 class PVZView : public CView {
 protected:
@@ -12,6 +13,8 @@ public:
 protected:
 	// 新增：绘制鼠标坐标函数
 	void DrawMouseCoordinates(CDC* cDC);
+	// 新增：绘制游戏失败画面
+	void DrawGameOverScreen(CDC* cDC);
 
 protected:
 	DECLARE_MESSAGE_MAP()

@@ -18,6 +18,13 @@ BEGIN_MESSAGE_MAP(PVZView, CView)
 END_MESSAGE_MAP()
 
 void PVZView::OnDraw(CDC* cDC) {
+    // 如果游戏失败，显示全屏黑屏和游戏失败文字
+    if (PVZWinApp::gameOver) {
+        DrawGameOverScreen(cDC);
+        return; // 直接返回，不绘制游戏内容
+    }
+
+    // 正常的游戏绘制代码（只有在游戏没有失败时才执行）
     // 获得院子的信息
     Yard& yard = theDoc->getYard();
     SeedBank& sbank = theDoc->getSeedBank();
@@ -65,6 +72,37 @@ void PVZView::OnDraw(CDC* cDC) {
 
     buf.DeleteObject();
     memDC.DeleteDC();
+}
+
+// 新增函数：绘制游戏失败画面
+void PVZView::DrawGameOverScreen(CDC* cDC) {
+    // 绘制全屏黑屏
+    CRect rect;
+    GetClientRect(&rect);
+    cDC->FillSolidRect(&rect, RGB(0, 0, 0)); // 黑色背景
+
+    // 创建大号字体
+    CFont font;
+    font.CreatePointFont(400, "微软雅黑"); // 更大的字体
+
+    CFont* oldFont = cDC->SelectObject(&font);
+    COLORREF oldColor = cDC->SetTextColor(RGB(255, 0, 0)); // 红色
+    int oldBkMode = cDC->SetBkMode(TRANSPARENT);
+
+    CString gameOverText = _T("游戏失败");
+
+    // 计算文字位置（居中显示）
+    CSize textSize = cDC->GetTextExtent(gameOverText);
+    int x = (rect.Width() - textSize.cx) / 2;
+    int y = (rect.Height() - textSize.cy) / 2;
+
+    cDC->TextOut(x, y, gameOverText);
+
+    // 恢复原来的设置
+    cDC->SelectObject(oldFont);
+    cDC->SetTextColor(oldColor);
+    cDC->SetBkMode(oldBkMode);
+    font.DeleteObject();
 }
 
 // 新增函数：在鼠标位置显示坐标
