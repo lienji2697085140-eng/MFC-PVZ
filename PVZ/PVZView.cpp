@@ -67,14 +67,13 @@ void PVZView::OnDraw(CDC* cDC) {
         (int)(yard.getHeight() * ZOOM_FACTOR), &memDC, 0, 0, (int)yard.getWidth(),
         (int)(yard.getHeight()), { AC_SRC_OVER, 0, 255, 0 });
 
-    // 在鼠标位置显示坐标（在双缓冲绘制完成后添加）
+    // 在鼠标位置显示坐标
     DrawMouseCoordinates(cDC);
 
     buf.DeleteObject();
     memDC.DeleteDC();
 }
 
-// 新增函数：绘制游戏失败画面
 void PVZView::DrawGameOverScreen(CDC* cDC) {
     // 绘制全屏黑屏
     CRect rect;
@@ -94,7 +93,7 @@ void PVZView::DrawGameOverScreen(CDC* cDC) {
     // 计算文字位置（居中显示）
     CSize textSize = cDC->GetTextExtent(gameOverText);
     int x = (rect.Width() - textSize.cx) / 2;
-    int y = (rect.Height() - textSize.cy) / 2;
+    int y = (rect.Height() - textSize.cy) / 2 - 50; // 上移一点给按钮留空间
 
     cDC->TextOut(x, y, gameOverText);
 
@@ -103,9 +102,74 @@ void PVZView::DrawGameOverScreen(CDC* cDC) {
     cDC->SetTextColor(oldColor);
     cDC->SetBkMode(oldBkMode);
     font.DeleteObject();
+
+    // 绘制重新开始按钮
+    DrawRestartButton(cDC);
 }
 
-// 新增函数：在鼠标位置显示坐标
+void PVZView::DrawRestartButton(CDC* cDC) {
+    CRect rect;
+    GetClientRect(&rect);
+
+    // 按钮位置（在游戏失败文字下方）
+    int buttonWidth = 200;
+    int buttonHeight = 60;
+    int buttonX = (rect.Width() - buttonWidth) / 2;
+    int buttonY = (rect.Height() - buttonHeight) / 2 + 50;
+
+    // 绘制灰色按钮背景
+    CRect buttonRect(buttonX, buttonY, buttonX + buttonWidth, buttonY + buttonHeight);
+    cDC->FillSolidRect(buttonRect, RGB(128, 128, 128)); // 灰色背景
+
+    // 绘制按钮边框
+    CPen pen(PS_SOLID, 2, RGB(200, 200, 200));
+    CPen* oldPen = cDC->SelectObject(&pen);
+    cDC->Rectangle(buttonRect);
+    cDC->SelectObject(oldPen);
+
+    // 创建按钮字体
+    CFont font;
+    font.CreatePointFont(200, "微软雅黑"); // 比游戏失败字体小
+
+    CFont* oldFont = cDC->SelectObject(&font);
+    COLORREF oldColor = cDC->SetTextColor(RGB(0, 255, 0)); // 绿色文字
+    int oldBkMode = cDC->SetBkMode(TRANSPARENT);
+
+    CString restartText = _T("重新开始");
+
+    // 计算文字在按钮中的位置（居中）
+    CSize textSize = cDC->GetTextExtent(restartText);
+    int textX = buttonX + (buttonWidth - textSize.cx) / 2;
+    int textY = buttonY + (buttonHeight - textSize.cy) / 2;
+
+    cDC->TextOut(textX, textY, restartText);
+
+    // 恢复原来的设置
+    cDC->SelectObject(oldFont);
+    cDC->SetTextColor(oldColor);
+    cDC->SetBkMode(oldBkMode);
+    font.DeleteObject();
+}
+
+bool PVZView::IsClickRestartButton(CPoint point) {
+    if (!PVZWinApp::gameOver) {
+        return false;
+    }
+
+    CRect rect;
+    GetClientRect(&rect);
+
+    // 按钮位置（与绘制时一致）
+    int buttonWidth = 200;
+    int buttonHeight = 60;
+    int buttonX = (rect.Width() - buttonWidth) / 2;
+    int buttonY = (rect.Height() - buttonHeight) / 2 + 50;
+
+    CRect buttonRect(buttonX, buttonY, buttonX + buttonWidth, buttonY + buttonHeight);
+
+    return buttonRect.PtInRect(point);
+}
+
 void PVZView::DrawMouseCoordinates(CDC* cDC) {
     // 获取鼠标位置
     CPoint point;
@@ -151,6 +215,17 @@ void PVZView::OnMouseMove(UINT nFlags, CPoint point) {
 }
 
 void PVZView::OnLButtonDown(UINT nFlags, CPoint point) {
+    // 如果游戏失败，检查是否点击了重新开始按钮
+    if (PVZWinApp::gameOver) {
+        if (IsClickRestartButton(point)) {
+            // 重置游戏
+            PVZWinApp::ResetGame();
+            Invalidate(TRUE); // 刷新屏幕
+            return;
+        }
+    }
+
+    // 正常的游戏点击逻辑
     auto doc = ((PVZDoc*)m_pDocument);
     SeedBank& sbank = doc->getSeedBank();
     Player& player = doc->getPlayer();

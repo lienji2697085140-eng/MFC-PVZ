@@ -1,5 +1,4 @@
 #include "PVZWinApp.h"
-
 #include "Config.h"
 #include "NormalZombie.h"
 #include "PVZDoc.h"
@@ -29,6 +28,44 @@ void PVZWinApp::ResetGame() {
     gameOver = false;
     gamePaused = false;
     Visible::currentGameTick = 0;
+
+    // 清空游戏数据（避免使用clear()）
+    if (theDoc) {
+        Yard& yard = theDoc->getYard();
+        auto& sunList = theDoc->getSunList();
+        auto& zombieList = yard.getZombieList();
+        auto& ejectList = yard.getEjectList();
+
+        // 清空阳光 - 使用erase逐个删除
+        auto sunIter = sunList.begin();
+        while (sunIter != sunList.end()) {
+            sunIter = sunList.erase(sunIter);
+        }
+
+        // 清空僵尸 - 对每行逐个删除
+        for (int row = 0; row < 5; ++row) {
+            auto zombieIter = zombieList[row].begin();
+            while (zombieIter != zombieList[row].end()) {
+                zombieIter = zombieList[row].erase(zombieIter);
+            }
+        }
+
+        // 清空植物 - 设置为nullptr
+        yard.foreach(yard.getPlantMatrix(), [](Yard::plant_iter& iter, int) {
+            *iter = nullptr;
+            });
+
+        // 清空发射物 - 使用erase逐个删除
+        for (int row = 0; row < 5; ++row) {
+            auto ejectIter = ejectList[row].begin();
+            while (ejectIter != ejectList[row].end()) {
+                ejectIter = ejectList[row].erase(ejectIter);
+            }
+        }
+
+        // 玩家状态会在游戏自然进行中重置，不需要调用reset()
+        // SeedBank会在游戏重新开始时自动重置
+    }
 }
 
 void PVZWinApp::mainLoop(HWND, UINT, UINT_PTR, DWORD) {
@@ -41,7 +78,6 @@ void PVZWinApp::animationLoop(HWND, UINT, UINT_PTR, DWORD) {
     if (gamePaused) {
         return;
     }
-
     // 更新元素动画 进入下一帧
     loadNextFPS();
 }
@@ -57,10 +93,10 @@ void PVZWinApp::gameTickLoop(HWND, UINT, UINT_PTR, DWORD) {
     auto& ejectList = yard.getEjectList();
     auto& zombieList = yard.getZombieList();
 
-    // 检测僵尸是否到达x=381的边框
+    // 检测僵尸是否到达x=220的边框
     for (int row = 0; row < 5; ++row) {
         for (auto& zombie : zombieList[row]) {
-            if (zombie->getLeftX() <= 220) {  // 修改为x=220
+            if (zombie->getLeftX() <= 220) {
                 // 僵尸碰到边框，游戏失败
                 GameOver();
                 break;
