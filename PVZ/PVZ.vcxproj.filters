@@ -138,8 +138,8 @@
     <ClInclude Include="stdafx.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="BucketZombie.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="BucketHeadZombie.h">
+      <Filter>头文件\Zombie</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -218,8 +218,8 @@
     <ClCompile Include="Squash.cpp">
       <Filter>源文件\plant</Filter>
     </ClCompile>
-    <ClCompile Include="BucketZombie.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="BucketHeadZombie.cpp">
+      <Filter>源文件\zomibe</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
