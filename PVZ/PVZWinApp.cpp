@@ -2,6 +2,7 @@
 
 #include "Config.h"
 #include "NormalZombie.h"
+#include "BucketHeadZombie.h"
 #include "PVZDoc.h"
 #include "PVZFrameWnd.h"
 #include "PVZView.h"
@@ -65,16 +66,25 @@ void PVZWinApp::gameTickLoop(HWND, UINT, UINT_PTR, DWORD) {
   }
 
   if (Visible::currentGameTick % 500 == 0) {
-    // 生成僵尸
-    auto zombie(std::make_shared<NormalZombie>(RUNTIME_CLASS(NormalZombie)));
-    zombie->setMapState(Zombie::MoveDynamic);
-    zombie->setLeftX(yard.getWidth() * 0.7);
-    int row = rand() % 5;
-    zombie->setTopY(yard.getPlantTopY() + row * yard.getPlantHeight() +
-      yard.getPlantHeight() * (row < 3 ? 0.1 : 0) -
-      (zombie->getHeight() * 0.35));
-    zombie->addState(Zombie::MOVE);
-    zombieList[row].push_back(zombie);
+      // 生成僵尸 - 随机生成普通僵尸或铁桶僵尸
+      std::shared_ptr<Zombie> zombie;
+
+      // 30%概率生成铁桶僵尸，70%概率生成普通僵尸
+      if (rand() % 100 < 30) {
+          zombie = std::make_shared<BucketHeadZombie>(RUNTIME_CLASS(BucketHeadZombie));
+      }
+      else {
+          zombie = std::make_shared<NormalZombie>(RUNTIME_CLASS(NormalZombie));
+      }
+
+      zombie->setMapState(Zombie::MoveDynamic);
+      zombie->setLeftX(yard.getWidth() * 0.7);
+      int row = rand() % 5;
+      zombie->setTopY(yard.getPlantTopY() + row * yard.getPlantHeight() +
+          yard.getPlantHeight() * (row < 3 ? 0.1 : 0) -
+          (zombie->getHeight() * 0.35));
+      zombie->addState(Zombie::MOVE);
+      zombieList[row].push_back(zombie);
   }
 
   ++Visible::currentGameTick;
