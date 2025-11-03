@@ -121,16 +121,19 @@ void PVZView::DrawRestartButton(CDC* cDC) {
     int buttonWidth = 200;
     int buttonHeight = 60;
     int buttonX = (rect.Width() - buttonWidth) / 2;
-    int buttonY = (rect.Height() - buttonHeight) / 2 + 50;
+    int buttonY = rect.Height() - buttonHeight - 20; // 距离底部20像素
 
+    //绘制灰色按钮背景
     CRect buttonRect(buttonX, buttonY, buttonX + buttonWidth, buttonY + buttonHeight);
     cDC->FillSolidRect(buttonRect, RGB(128, 128, 128));
 
+    //绘制按钮边框
     CPen pen(PS_SOLID, 2, RGB(200, 200, 200));
     CPen* oldPen = cDC->SelectObject(&pen);
     cDC->Rectangle(buttonRect);
     cDC->SelectObject(oldPen);
 
+    //创建按钮字体
     CFont font;
     font.CreatePointFont(200, "微软雅黑");
 
@@ -139,12 +142,15 @@ void PVZView::DrawRestartButton(CDC* cDC) {
     int oldBkMode = cDC->SetBkMode(TRANSPARENT);
 
     CString restartText = _T("重新开始");
+
+    //计算文字在按钮中的位置（居中）
     CSize textSize = cDC->GetTextExtent(restartText);
     int textX = buttonX + (buttonWidth - textSize.cx) / 2;
     int textY = buttonY + (buttonHeight - textSize.cy) / 2;
 
     cDC->TextOut(textX, textY, restartText);
 
+    //恢复原来的设置
     cDC->SelectObject(oldFont);
     cDC->SetTextColor(oldColor);
     cDC->SetBkMode(oldBkMode);
@@ -159,10 +165,11 @@ bool PVZView::IsClickRestartButton(CPoint point) {
     CRect rect;
     GetClientRect(&rect);
 
+    //按钮位置（与绘制时一致）
     int buttonWidth = 200;
     int buttonHeight = 60;
     int buttonX = (rect.Width() - buttonWidth) / 2;
-    int buttonY = (rect.Height() - buttonHeight) / 2 + 50;
+    int buttonY = rect.Height() - buttonHeight - 20; // 距离底部20像素
 
     CRect buttonRect(buttonX, buttonY, buttonX + buttonWidth, buttonY + buttonHeight);
 
@@ -170,24 +177,32 @@ bool PVZView::IsClickRestartButton(CPoint point) {
 }
 
 void PVZView::DrawMouseCoordinates(CDC* cDC) {
+    //获取鼠标位置
     CPoint point;
     GetCursorPos(&point);
     ScreenToClient(&point);
 
+    //转换为游戏内坐标（除以缩放因子）
     int gameX = (int)(point.x / ZOOM_FACTOR);
     int gameY = (int)(point.y / ZOOM_FACTOR);
 
+    //创建字体
     CFont font;
     font.CreatePointFont(90, "微软雅黑");
 
+    //保存原来的设置
     CFont* oldFont = cDC->SelectObject(&font);
     COLORREF oldColor = cDC->SetTextColor(RGB(255, 255, 0));
     int oldBkMode = cDC->SetBkMode(TRANSPARENT);
 
+    //格式化坐标字符串
     CString coordText;
     coordText.Format(_T("(%d, %d)"), gameX, gameY);
+
+    //在鼠标位置旁边显示坐标（稍微偏移避免被鼠标挡住）
     cDC->TextOut(point.x + 15, point.y + 15, coordText);
 
+    //恢复原来的设置
     cDC->SelectObject(oldFont);
     cDC->SetTextColor(oldColor);
     cDC->SetBkMode(oldBkMode);
@@ -195,6 +210,7 @@ void PVZView::DrawMouseCoordinates(CDC* cDC) {
 }
 
 void PVZView::DrawScore(CDC* cDC) {
+    //创建分数字体
     CFont font;
     font.CreatePointFont(120, "微软雅黑");
 
@@ -202,10 +218,14 @@ void PVZView::DrawScore(CDC* cDC) {
     COLORREF oldColor = cDC->SetTextColor(RGB(255, 255, 0));
     int oldBkMode = cDC->SetBkMode(TRANSPARENT);
 
+    //格式化分数字符串
     CString scoreText;
     scoreText.Format(_T("分数: %d"), PVZWinApp::score);
+
+    //在左上角显示分数
     cDC->TextOut(10, 10, scoreText);
 
+    //恢复原来的设置
     cDC->SelectObject(oldFont);
     cDC->SetTextColor(oldColor);
     cDC->SetBkMode(oldBkMode);
@@ -214,20 +234,27 @@ void PVZView::DrawScore(CDC* cDC) {
 
 void PVZView::OnMouseMove(UINT nFlags, CPoint point) {
     Player& player = ((PVZDoc*)m_pDocument)->getPlayer();
+    //更新鼠标指针位置
     player.setPos({ int(point.x / ZOOM_FACTOR), int(point.y / ZOOM_FACTOR) });
+
+    //刷新显示，更新坐标位置
     Invalidate(FALSE);
+
     CView::OnMouseMove(nFlags, point);
 }
 
 void PVZView::OnLButtonDown(UINT nFlags, CPoint point) {
+    //如果游戏失败，检查是否点击了重新开始按钮
     if (PVZWinApp::gameOver) {
         if (IsClickRestartButton(point)) {
+            //重置游戏
             PVZWinApp::ResetGame();
-            Invalidate(TRUE);
+            Invalidate(TRUE); //刷新屏幕
             return;
         }
     }
 
+    //正常的游戏点击逻辑
     auto doc = ((PVZDoc*)m_pDocument);
     SeedBank& sbank = doc->getSeedBank();
     Player& player = doc->getPlayer();
@@ -236,8 +263,11 @@ void PVZView::OnLButtonDown(UINT nFlags, CPoint point) {
 
     player.selectPlant(yard, sbank, point);
     player.collectSun(yard, sbank, sunList, point);
+
+    //点击时也刷新坐标显示
     Invalidate(FALSE);
 }
 
 void PVZView::OnSelect(UINT nFlags, CPoint point) {}
+
 void PVZView::OnPlace(UINT nFlags, CPoint point) {}
