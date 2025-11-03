@@ -135,6 +135,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BucketZombie.h" />
     <ClInclude Include="Chomper.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="GameEntity.h" />
@@ -170,6 +171,7 @@
     <ClInclude Include="Zombie.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BucketZombie.cpp" />
     <ClCompile Include="Chomper.cpp" />
     <ClCompile Include="GameEntity.cpp" />
     <ClCompile Include="NormalZombie.cpp">
