@@ -1,12 +1,11 @@
-#include "PVZView.h"
-
-#include "Config.h"
-#include "PVZDoc.h"
-#include "Plant.h"
-#include "Sun.h"
-#include "Yard.h"
-#include "Zombie.h"
-#include "resource.h"
+#include"PVZView.h"
+#include"Config.h"
+#include"PVZDoc.h"
+#include"Plant.h"
+#include"Sun.h"
+#include"Yard.h"
+#include"Zombie.h"
+#include"resource.h"
 
 extern PVZDoc* theDoc;
 
@@ -18,20 +17,19 @@ BEGIN_MESSAGE_MAP(PVZView, CView)
 END_MESSAGE_MAP()
 
 void PVZView::OnDraw(CDC* cDC) {
-    // 如果游戏失败，显示全屏黑屏和游戏失败文字
+    //如果游戏失败，显示全屏黑屏和游戏失败文字
     if (PVZWinApp::gameOver) {
         DrawGameOverScreen(cDC);
-        return; // 直接返回，不绘制游戏内容
+        return;
     }
 
-    // 正常的游戏绘制代码（只有在游戏没有失败时才执行）
-    // 获得院子的信息
+    //正常的游戏绘制代码
     Yard& yard = theDoc->getYard();
     SeedBank& sbank = theDoc->getSeedBank();
     Player& player = theDoc->getPlayer();
     PVZDoc::SunlightList& sunList = theDoc->getSunList();
 
-    // 准备双缓冲所需的数据
+    //准备双缓冲所需的数据
     CDC memDC;
     CBitmap buf;
     CFont font;
@@ -41,11 +39,11 @@ void PVZView::OnDraw(CDC* cDC) {
     memDC.SelectObject(buf);
     memDC.SelectObject(font);
 
-    // 绘制院子上的元素
+    //绘制院子上的元素
     yard.draw(memDC.m_hDC);
-    // 绘制植物选项卡
+    //绘制植物选项卡
     sbank.draw(memDC.m_hDC);
-    // 绘制植物僵尸
+    //绘制植物僵尸
     yard.foreach(yard.getPlantMatrix(), [&](Yard::plant_iter& iter, int) {
         if (*iter) (*iter)->draw(memDC.m_hDC);
         });
@@ -56,18 +54,21 @@ void PVZView::OnDraw(CDC* cDC) {
         if (*iter) (*iter)->draw(memDC.m_hDC);
         });
 
-    // 绘制选中的植物
+    //绘制选中的植物
     player.drawCurrentPlant(memDC.m_hDC, yard);
-    // 绘制太阳
+    //绘制太阳
     for (auto& sun : sunList) {
         sun->draw(memDC.m_hDC);
     }
-    // 结束双缓冲绘制
+    //结束双缓冲绘制
     cDC->AlphaBlend(0, 0, (int)(yard.getWidth() * ZOOM_FACTOR),
         (int)(yard.getHeight() * ZOOM_FACTOR), &memDC, 0, 0, (int)yard.getWidth(),
         (int)(yard.getHeight()), { AC_SRC_OVER, 0, 255, 0 });
 
-    // 在鼠标位置显示坐标
+    //显示分数
+    DrawScore(cDC);
+
+    //在鼠标位置显示坐标
     DrawMouseCoordinates(cDC);
 
     buf.DeleteObject();
@@ -75,35 +76,41 @@ void PVZView::OnDraw(CDC* cDC) {
 }
 
 void PVZView::DrawGameOverScreen(CDC* cDC) {
-    // 绘制全屏黑屏
+    //绘制全屏黑屏
     CRect rect;
     GetClientRect(&rect);
-    cDC->FillSolidRect(&rect, RGB(0, 0, 0)); // 黑色背景
+    cDC->FillSolidRect(&rect, RGB(0, 0, 0));
 
-    // 创建大号字体
+    //创建大号字体
     CFont font;
-    font.CreatePointFont(400, "微软雅黑"); // 更大的字体
+    font.CreatePointFont(400, "微软雅黑");
 
     CFont* oldFont = cDC->SelectObject(&font);
-    COLORREF oldColor = cDC->SetTextColor(RGB(255, 0, 0)); // 红色
+    COLORREF oldColor = cDC->SetTextColor(RGB(255, 0, 0));
     int oldBkMode = cDC->SetBkMode(TRANSPARENT);
 
     CString gameOverText = _T("游戏失败");
-
-    // 计算文字位置（居中显示）
     CSize textSize = cDC->GetTextExtent(gameOverText);
     int x = (rect.Width() - textSize.cx) / 2;
-    int y = (rect.Height() - textSize.cy) / 2 - 50; // 上移一点给按钮留空间
+    int y = (rect.Height() - textSize.cy) / 2 - 50;
 
     cDC->TextOut(x, y, gameOverText);
 
-    // 恢复原来的设置
+    //显示最终分数
+    CString finalScoreText;
+    finalScoreText.Format(_T("最终分数: %d"), PVZWinApp::score);
+    CSize scoreTextSize = cDC->GetTextExtent(finalScoreText);
+    int scoreX = (rect.Width() - scoreTextSize.cx) / 2;
+    int scoreY = y + textSize.cy + 20;
+    cDC->TextOut(scoreX, scoreY, finalScoreText);
+
+    //恢复原来的设置
     cDC->SelectObject(oldFont);
     cDC->SetTextColor(oldColor);
     cDC->SetBkMode(oldBkMode);
     font.DeleteObject();
 
-    // 绘制重新开始按钮
+    //绘制重新开始按钮
     DrawRestartButton(cDC);
 }
 
@@ -111,40 +118,33 @@ void PVZView::DrawRestartButton(CDC* cDC) {
     CRect rect;
     GetClientRect(&rect);
 
-    // 按钮位置（在游戏失败文字下方）
     int buttonWidth = 200;
     int buttonHeight = 60;
     int buttonX = (rect.Width() - buttonWidth) / 2;
     int buttonY = (rect.Height() - buttonHeight) / 2 + 50;
 
-    // 绘制灰色按钮背景
     CRect buttonRect(buttonX, buttonY, buttonX + buttonWidth, buttonY + buttonHeight);
-    cDC->FillSolidRect(buttonRect, RGB(128, 128, 128)); // 灰色背景
+    cDC->FillSolidRect(buttonRect, RGB(128, 128, 128));
 
-    // 绘制按钮边框
     CPen pen(PS_SOLID, 2, RGB(200, 200, 200));
     CPen* oldPen = cDC->SelectObject(&pen);
     cDC->Rectangle(buttonRect);
     cDC->SelectObject(oldPen);
 
-    // 创建按钮字体
     CFont font;
-    font.CreatePointFont(200, "微软雅黑"); // 比游戏失败字体小
+    font.CreatePointFont(200, "微软雅黑");
 
     CFont* oldFont = cDC->SelectObject(&font);
-    COLORREF oldColor = cDC->SetTextColor(RGB(0, 255, 0)); // 绿色文字
+    COLORREF oldColor = cDC->SetTextColor(RGB(0, 255, 0));
     int oldBkMode = cDC->SetBkMode(TRANSPARENT);
 
     CString restartText = _T("重新开始");
-
-    // 计算文字在按钮中的位置（居中）
     CSize textSize = cDC->GetTextExtent(restartText);
     int textX = buttonX + (buttonWidth - textSize.cx) / 2;
     int textY = buttonY + (buttonHeight - textSize.cy) / 2;
 
     cDC->TextOut(textX, textY, restartText);
 
-    // 恢复原来的设置
     cDC->SelectObject(oldFont);
     cDC->SetTextColor(oldColor);
     cDC->SetBkMode(oldBkMode);
@@ -159,7 +159,6 @@ bool PVZView::IsClickRestartButton(CPoint point) {
     CRect rect;
     GetClientRect(&rect);
 
-    // 按钮位置（与绘制时一致）
     int buttonWidth = 200;
     int buttonHeight = 60;
     int buttonX = (rect.Width() - buttonWidth) / 2;
@@ -171,32 +170,42 @@ bool PVZView::IsClickRestartButton(CPoint point) {
 }
 
 void PVZView::DrawMouseCoordinates(CDC* cDC) {
-    // 获取鼠标位置
     CPoint point;
     GetCursorPos(&point);
     ScreenToClient(&point);
 
-    // 转换为游戏内坐标（除以缩放因子）
     int gameX = (int)(point.x / ZOOM_FACTOR);
     int gameY = (int)(point.y / ZOOM_FACTOR);
 
-    // 创建字体
     CFont font;
-    font.CreatePointFont(90, "微软雅黑"); // 小一点的字体
+    font.CreatePointFont(90, "微软雅黑");
 
-    // 保存原来的设置
     CFont* oldFont = cDC->SelectObject(&font);
-    COLORREF oldColor = cDC->SetTextColor(RGB(255, 255, 0)); // 黄色文字
+    COLORREF oldColor = cDC->SetTextColor(RGB(255, 255, 0));
     int oldBkMode = cDC->SetBkMode(TRANSPARENT);
 
-    // 格式化坐标字符串
     CString coordText;
     coordText.Format(_T("(%d, %d)"), gameX, gameY);
-
-    // 在鼠标位置旁边显示坐标（稍微偏移避免被鼠标挡住）
     cDC->TextOut(point.x + 15, point.y + 15, coordText);
 
-    // 恢复原来的设置
+    cDC->SelectObject(oldFont);
+    cDC->SetTextColor(oldColor);
+    cDC->SetBkMode(oldBkMode);
+    font.DeleteObject();
+}
+
+void PVZView::DrawScore(CDC* cDC) {
+    CFont font;
+    font.CreatePointFont(120, "微软雅黑");
+
+    CFont* oldFont = cDC->SelectObject(&font);
+    COLORREF oldColor = cDC->SetTextColor(RGB(255, 255, 0));
+    int oldBkMode = cDC->SetBkMode(TRANSPARENT);
+
+    CString scoreText;
+    scoreText.Format(_T("分数: %d"), PVZWinApp::score);
+    cDC->TextOut(10, 10, scoreText);
+
     cDC->SelectObject(oldFont);
     cDC->SetTextColor(oldColor);
     cDC->SetBkMode(oldBkMode);
@@ -205,27 +214,20 @@ void PVZView::DrawMouseCoordinates(CDC* cDC) {
 
 void PVZView::OnMouseMove(UINT nFlags, CPoint point) {
     Player& player = ((PVZDoc*)m_pDocument)->getPlayer();
-    // 更新鼠标指针位置
     player.setPos({ int(point.x / ZOOM_FACTOR), int(point.y / ZOOM_FACTOR) });
-
-    // 刷新显示，更新坐标位置
     Invalidate(FALSE);
-
     CView::OnMouseMove(nFlags, point);
 }
 
 void PVZView::OnLButtonDown(UINT nFlags, CPoint point) {
-    // 如果游戏失败，检查是否点击了重新开始按钮
     if (PVZWinApp::gameOver) {
         if (IsClickRestartButton(point)) {
-            // 重置游戏
             PVZWinApp::ResetGame();
-            Invalidate(TRUE); // 刷新屏幕
+            Invalidate(TRUE);
             return;
         }
     }
 
-    // 正常的游戏点击逻辑
     auto doc = ((PVZDoc*)m_pDocument);
     SeedBank& sbank = doc->getSeedBank();
     Player& player = doc->getPlayer();
@@ -233,13 +235,9 @@ void PVZView::OnLButtonDown(UINT nFlags, CPoint point) {
     auto& sunList = doc->getSunList();
 
     player.selectPlant(yard, sbank, point);
-
     player.collectSun(yard, sbank, sunList, point);
-
-    // 点击时也刷新坐标显示
     Invalidate(FALSE);
 }
 
 void PVZView::OnSelect(UINT nFlags, CPoint point) {}
-
 void PVZView::OnPlace(UINT nFlags, CPoint point) {}
