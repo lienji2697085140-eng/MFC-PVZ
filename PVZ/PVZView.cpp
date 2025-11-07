@@ -1,3 +1,4 @@
+#include "stdafx.h"  // 确保stdafx.h在最前面
 #include "PVZView.h"
 #include "Config.h"
 #include "PVZDoc.h"
@@ -16,10 +17,10 @@ BEGIN_MESSAGE_MAP(PVZView, CView)
     ON_WM_LBUTTONDOWN()
 END_MESSAGE_MAP()
 
-void PVZView::OnDraw(CDC* cDC) {
-    // 如果游戏失败，显示全屏黑屏和游戏失败文字
+void PVZView::OnDraw(CDC* pDC) {
+    // 如果游戏失败,显示全屏黑屏和游戏失败文字
     if (PVZWinApp::gameOver) {
-        DrawGameOverScreen(cDC);
+        DrawGameOverScreen(pDC);
         return;
     }
 
@@ -33,52 +34,91 @@ void PVZView::OnDraw(CDC* cDC) {
     CDC memDC;
     CBitmap buf;
     CFont font;
-    memDC.CreateCompatibleDC(cDC);
-    font.CreatePointFont(170, "微软雅黑");
-    buf.CreateCompatibleBitmap(cDC, (int)(yard.getWidth()), (int)(yard.getHeight()));
-    memDC.SelectObject(buf);
-    memDC.SelectObject(font);
+    memDC.CreateCompatibleDC(pDC);
+    font.CreatePointFont(170, _T("微软雅黑"));
+    CRect rect;
+    GetClientRect(&rect);
+    buf.CreateCompatibleBitmap(pDC, rect.Width(), rect.Height());
+    memDC.SelectObject(&buf);
+    memDC.SelectObject(&font);
+
+    // 绘制白色背景
+    memDC.FillSolidRect(rect, RGB(255, 255, 255));
 
     // 绘制院子上的元素
     yard.draw(memDC.m_hDC);
-
     // 绘制植物选项卡
     sbank.draw(memDC.m_hDC);
-
     // 绘制植物僵尸
     yard.foreach(yard.getPlantMatrix(), [&](Yard::plant_iter& iter, int) {
         if (*iter) (*iter)->draw(memDC.m_hDC);
         });
-
     yard.foreach(yard.getZombieList(), [&](Yard::zombie_iter& iter, int row) {
         if (*iter) (*iter)->draw(memDC.m_hDC);
         });
-
     yard.foreach(yard.getEjectList(), [&](Yard::ejects_iter& iter, int) {
         if (*iter) (*iter)->draw(memDC.m_hDC);
         });
-
     // 绘制选中的植物
     player.drawCurrentPlant(memDC.m_hDC, yard);
-
     // 绘制太阳
     for (auto& sun : sunList) {
         sun->draw(memDC.m_hDC);
     }
 
     // 结束双缓冲绘制
-    cDC->AlphaBlend(0, 0, (int)(yard.getWidth() * ZOOM_FACTOR),
-        (int)(yard.getHeight() * ZOOM_FACTOR), &memDC, 0, 0, (int)yard.getWidth(),
-        (int)(yard.getHeight()), { AC_SRC_OVER, 0, 255, 0 });
+    pDC->BitBlt(0, 0, rect.Width(), rect.Height(), &memDC, 0, 0, SRCCOPY);
 
     // 显示分数
-    DrawScore(cDC);
-
+    DrawScore(pDC);
+    // 新增：绘制分数弹出效果
+    DrawScorePopups(pDC);
     // 在鼠标位置显示坐标
-    DrawMouseCoordinates(cDC);
+    DrawMouseCoordinates(pDC);
 
     buf.DeleteObject();
     memDC.DeleteDC();
+    font.DeleteObject();
+}
+
+// 新增：绘制分数弹出效果函数实现
+void PVZView::DrawScorePopups(CDC* cDC) {
+    if (PVZWinApp::scorePopups.empty()) return;
+
+    // 创建字体
+    CFont font;
+    font.CreatePointFont(120, _T("微软雅黑"));
+    CFont* oldFont = cDC->SelectObject(&font);
+
+    int oldBkMode = cDC->SetBkMode(TRANSPARENT);
+
+    for (const auto& popup : PVZWinApp::scorePopups) {
+        // 根据透明度设置颜色（从红色渐变为黄色）
+        // 当alpha从1.0到0.0时，红色分量保持255，绿色分量从0增加到255
+        int redValue = 255;
+        int greenValue = (int)(255 * (1.0 - popup.alpha)); // 透明度越低，绿色分量越高
+        int blueValue = 0;
+
+        COLORREF textColor = RGB(redValue, greenValue, blueValue);
+
+        COLORREF oldColor = cDC->SetTextColor(textColor);
+
+        // 格式化分数文本
+        CString scoreText;
+        scoreText.Format(_T("+%d"), popup.points);
+
+        // 在指定位置绘制分数（应用缩放因子）
+        int screenX = (int)(popup.x * ZOOM_FACTOR);
+        int screenY = (int)(popup.y * ZOOM_FACTOR);
+        cDC->TextOut(screenX, screenY, scoreText);
+
+        cDC->SetTextColor(oldColor);
+    }
+
+    // 恢复设置
+    cDC->SelectObject(oldFont);
+    cDC->SetBkMode(oldBkMode);
+    font.DeleteObject();
 }
 
 void PVZView::DrawGameOverScreen(CDC* cDC) {
@@ -89,7 +129,7 @@ void PVZView::DrawGameOverScreen(CDC* cDC) {
 
     // 创建大号字体
     CFont font;
-    font.CreatePointFont(400, "微软雅黑");
+    font.CreatePointFont(400, _T("微软雅黑"));
     CFont* oldFont = cDC->SelectObject(&font);
     COLORREF oldColor = cDC->SetTextColor(RGB(255, 0, 0));
     int oldBkMode = cDC->SetBkMode(TRANSPARENT);
@@ -138,7 +178,7 @@ void PVZView::DrawRestartButton(CDC* cDC) {
 
     // 创建按钮字体
     CFont font;
-    font.CreatePointFont(200, "微软雅黑");
+    font.CreatePointFont(200, _T("微软雅黑"));
     CFont* oldFont = cDC->SelectObject(&font);
     COLORREF oldColor = cDC->SetTextColor(RGB(0, 255, 0));
     int oldBkMode = cDC->SetBkMode(TRANSPARENT);
@@ -163,7 +203,6 @@ bool PVZView::IsClickRestartButton(CPoint point) {
 
     CRect rect;
     GetClientRect(&rect);
-
     int buttonWidth = 200;
     int buttonHeight = 60;
     int buttonX = (rect.Width() - buttonWidth) / 2;
@@ -185,7 +224,7 @@ void PVZView::DrawMouseCoordinates(CDC* cDC) {
 
     // 创建字体
     CFont font;
-    font.CreatePointFont(90, "微软雅黑");
+    font.CreatePointFont(90, _T("微软雅黑"));
 
     // 保存原来的设置
     CFont* oldFont = cDC->SelectObject(&font);
@@ -209,7 +248,7 @@ void PVZView::DrawMouseCoordinates(CDC* cDC) {
 void PVZView::DrawScore(CDC* cDC) {
     // 创建分数字体
     CFont font;
-    font.CreatePointFont(120, "微软雅黑");
+    font.CreatePointFont(120, _T("微软雅黑"));
     CFont* oldFont = cDC->SelectObject(&font);
     COLORREF oldColor = cDC->SetTextColor(RGB(255, 255, 0));
     int oldBkMode = cDC->SetBkMode(TRANSPARENT);
@@ -229,13 +268,13 @@ void PVZView::DrawScore(CDC* cDC) {
 }
 
 void PVZView::OnMouseMove(UINT nFlags, CPoint point) {
-    Player& player = ((PVZDoc*)m_pDocument)->getPlayer();
-
-    // 更新鼠标指针位置
-    player.setPos({ int(point.x / ZOOM_FACTOR), int(point.y / ZOOM_FACTOR) });
-
-    // 刷新显示，更新坐标位置
-    Invalidate(FALSE);
+    if (m_pDocument) {
+        Player& player = ((PVZDoc*)m_pDocument)->getPlayer();
+        // 更新鼠标指针位置
+        player.setPos({ int(point.x / ZOOM_FACTOR), int(point.y / ZOOM_FACTOR) });
+        // 刷新显示，更新坐标位置
+        Invalidate(FALSE);
+    }
     CView::OnMouseMove(nFlags, point);
 }
 
@@ -251,17 +290,19 @@ void PVZView::OnLButtonDown(UINT nFlags, CPoint point) {
     }
 
     // 正常的游戏点击逻辑
-    auto doc = ((PVZDoc*)m_pDocument);
-    SeedBank& sbank = doc->getSeedBank();
-    Player& player = doc->getPlayer();
-    Yard& yard = doc->getYard();
-    auto& sunList = doc->getSunList();
+    if (m_pDocument) {
+        auto doc = (PVZDoc*)m_pDocument;
+        SeedBank& sbank = doc->getSeedBank();
+        Player& player = doc->getPlayer();
+        Yard& yard = doc->getYard();
+        auto& sunList = doc->getSunList();
 
-    player.selectPlant(yard, sbank, point);
-    player.collectSun(yard, sbank, sunList, point);
+        player.selectPlant(yard, sbank, point);
+        player.collectSun(yard, sbank, sunList, point);
 
-    // 点击时也刷新坐标显示
-    Invalidate(FALSE);
+        // 点击时也刷新坐标显示
+        Invalidate(FALSE);
+    }
 }
 
 void PVZView::OnSelect(UINT nFlags, CPoint point) {}
