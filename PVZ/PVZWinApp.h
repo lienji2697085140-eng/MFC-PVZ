@@ -19,6 +19,7 @@ public:
     static bool gamePaused;
     static int score;
     static std::list<ScorePopup> scorePopups;
+    static int resetScoreCounter;  // 只添加分数重置计数器
 
     static void updateScreen();
     static void loadNextFPS();
