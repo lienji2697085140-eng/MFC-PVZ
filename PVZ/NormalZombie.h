@@ -7,8 +7,8 @@ class NormalZombie : public Zombie {
 
 private:
 
-  static constexpr int HP = 181;
-  static constexpr double MOVESPEED = 0.002;
+  static constexpr int HP = 1000;
+  static constexpr double MOVESPEED = 0.0002;
   static constexpr int HURT = 60;
 
 public:

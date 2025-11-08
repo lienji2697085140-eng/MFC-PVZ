@@ -25,7 +25,7 @@ void Squash::skill() {
   auto& rowZombie = theDoc->getYard().getZombieList()[plantPos.x];
   for (auto& zombie : rowZombie) {
     if (collisio(*zombie)) {
-      zombie->damage(500);
+      zombie->damage(50000);
     }
   }
 }
