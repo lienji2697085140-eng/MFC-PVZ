@@ -16,12 +16,19 @@ BEGIN_MESSAGE_MAP(PVZView, CView)
     ON_WM_MOUSEMOVE()
     ON_WM_LBUTTONDOWN()
     ON_WM_RBUTTONDOWN()
+    ON_WM_KEYDOWN()
 END_MESSAGE_MAP()
 
 void PVZView::OnDraw(CDC* pDC) {
     //如果游戏失败,显示全屏黑屏和游戏失败文字
     if (PVZWinApp::gameOver) {
         DrawGameOverScreen(pDC);
+        return;
+    }
+
+    //如果游戏暂停，显示暂停画面
+    if (PVZWinApp::gamePaused && !PVZWinApp::gameOver) {
+        DrawPauseScreen(pDC);
         return;
     }
 
@@ -92,7 +99,129 @@ void PVZView::OnDraw(CDC* pDC) {
     font.DeleteObject();
 }
 
-//新增:绘制分数弹出效果函数实现
+// 修复：绘制暂停画面
+void PVZView::DrawPauseScreen(CDC* pDC) {
+    CRect rect;
+    GetClientRect(&rect);
+
+    //直接绘制游戏画面（不递归调用OnDraw）
+    Yard& yard = theDoc->getYard();
+    SeedBank& sbank = theDoc->getSeedBank();
+    Player& player = theDoc->getPlayer();
+    PVZDoc::SunlightList& sunList = theDoc->getSunList();
+
+    //准备双缓冲
+    CDC memDC;
+    CBitmap buf;
+    CFont font;
+    memDC.CreateCompatibleDC(pDC);
+    font.CreatePointFont(170, _T("微软雅黑"));
+    buf.CreateCompatibleBitmap(pDC, rect.Width(), rect.Height());
+    memDC.SelectObject(&buf);
+    memDC.SelectObject(&font);
+
+    //绘制白色背景
+    memDC.FillSolidRect(rect, RGB(255, 255, 255));
+
+    //绘制院子上的元素
+    yard.draw(memDC.m_hDC);
+
+    //绘制植物选项卡
+    sbank.draw(memDC.m_hDC);
+
+    //绘制植物僵尸
+    yard.foreach(yard.getPlantMatrix(), [&](Yard::plant_iter& iter, int) {
+        if (*iter)(*iter)->draw(memDC.m_hDC);
+        });
+
+    yard.foreach(yard.getZombieList(), [&](Yard::zombie_iter& iter, int row) {
+        if (*iter)(*iter)->draw(memDC.m_hDC);
+        });
+
+    yard.foreach(yard.getEjectList(), [&](Yard::ejects_iter& iter, int) {
+        if (*iter)(*iter)->draw(memDC.m_hDC);
+        });
+
+    //绘制选中的植物
+    player.drawCurrentPlant(memDC.m_hDC, yard);
+
+    //绘制太阳
+    for (auto& sun : sunList) {
+        sun->draw(memDC.m_hDC);
+    }
+
+    //绘制半透明黑色覆盖层
+    CDC overlayDC;
+    CBitmap overlayBmp;
+    overlayDC.CreateCompatibleDC(pDC);
+    overlayBmp.CreateCompatibleBitmap(pDC, rect.Width(), rect.Height());
+    overlayDC.SelectObject(&overlayBmp);
+
+    //填充半透明黑色
+    overlayDC.FillSolidRect(rect, RGB(0, 0, 0));
+
+    BLENDFUNCTION blend;
+    blend.BlendOp = AC_SRC_OVER;
+    blend.BlendFlags = 0;
+    blend.SourceConstantAlpha = 128;  // 50%透明度
+    blend.AlphaFormat = 0;
+
+    //将半透明层混合到游戏画面上
+    AlphaBlend(memDC.m_hDC, 0, 0, rect.Width(), rect.Height(),
+        overlayDC.m_hDC, 0, 0, rect.Width(), rect.Height(), blend);
+
+    //绘制暂停文字
+    CFont pauseFont;
+    pauseFont.CreatePointFont(400, _T("微软雅黑"));
+    CFont* oldFont = memDC.SelectObject(&pauseFont);
+
+    COLORREF oldColor = memDC.SetTextColor(RGB(255, 0, 0));
+    int oldBkMode = memDC.SetBkMode(TRANSPARENT);
+
+    CString pauseText = _T("游戏暂停");
+    CSize textSize = memDC.GetTextExtent(pauseText);
+    int x = (rect.Width() - textSize.cx) / 2;
+    int y = (rect.Height() - textSize.cy) / 2;
+
+    //绘制文字阴影效果
+    memDC.SetTextColor(RGB(0, 0, 0));
+    memDC.TextOut(x + 3, y + 3, pauseText);
+
+    memDC.SetTextColor(RGB(255, 0, 0));
+    memDC.TextOut(x, y, pauseText);
+
+    //绘制提示文字
+    CFont hintFont;
+    hintFont.CreatePointFont(120, _T("微软雅黑"));
+    memDC.SelectObject(&hintFont);
+
+    CString hintText = _T("按空格键继续游戏");
+    CSize hintSize = memDC.GetTextExtent(hintText);
+    int hintX = (rect.Width() - hintSize.cx) / 2;
+    int hintY = y + textSize.cy + 40;
+
+    memDC.SetTextColor(RGB(255, 255, 0));
+    memDC.TextOut(hintX, hintY, hintText);
+
+    //将最终画面输出到屏幕
+    pDC->BitBlt(0, 0, rect.Width(), rect.Height(), &memDC, 0, 0, SRCCOPY);
+
+    //恢复设置
+    memDC.SelectObject(oldFont);
+    memDC.SetTextColor(oldColor);
+    memDC.SetBkMode(oldBkMode);
+
+    //清理资源
+    pauseFont.DeleteObject();
+    hintFont.DeleteObject();
+    font.DeleteObject();
+    buf.DeleteObject();
+    overlayBmp.DeleteObject();
+    memDC.DeleteDC();
+    overlayDC.DeleteDC();
+}
+
+// 其他函数保持不变...
 void PVZView::DrawScorePopups(CDC* cDC) {
     if (PVZWinApp::scorePopups.empty()) return;
 
@@ -269,6 +398,12 @@ void PVZView::DrawScore(CDC* cDC) {
 }
 
 void PVZView::OnMouseMove(UINT nFlags, CPoint point) {
+    //如果游戏暂停，不处理鼠标移动
+    if (PVZWinApp::gamePaused && !PVZWinApp::gameOver) {
+        CView::OnMouseMove(nFlags, point);
+        return;
+    }
+
     if (m_pDocument) {
         Player& player = ((PVZDoc*)m_pDocument)->getPlayer();
         //更新鼠标指针位置
@@ -286,6 +421,12 @@ void PVZView::OnMouseMove(UINT nFlags, CPoint point) {
 }
 
 void PVZView::OnLButtonDown(UINT nFlags, CPoint point) {
+    //如果游戏暂停，不处理鼠标点击
+    if (PVZWinApp::gamePaused && !PVZWinApp::gameOver) {
+        CView::OnLButtonDown(nFlags, point);
+        return;
+    }
+
     //如果游戏失败，检查是否点击了重新开始按钮
     if (PVZWinApp::gameOver) {
         if (IsClickRestartButton(point)) {
@@ -312,8 +453,13 @@ void PVZView::OnLButtonDown(UINT nFlags, CPoint point) {
     }
 }
 
-// 优化：右键点击切换坐标跟踪状态
 void PVZView::OnRButtonDown(UINT nFlags, CPoint point) {
+    //如果游戏暂停，不处理右键点击
+    if (PVZWinApp::gamePaused && !PVZWinApp::gameOver) {
+        CView::OnRButtonDown(nFlags, point);
+        return;
+    }
+
     // 切换坐标跟踪状态
     m_bTrackingCoordinates = !m_bTrackingCoordinates;
 
@@ -326,6 +472,22 @@ void PVZView::OnRButtonDown(UINT nFlags, CPoint point) {
     Invalidate(FALSE);
 
     CView::OnRButtonDown(nFlags, point);
+}
+
+void PVZView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
+    // 空格键暂停/继续游戏
+    if (nChar == VK_SPACE && !PVZWinApp::gameOver) {
+        PVZWinApp::gamePaused = !PVZWinApp::gamePaused;
+
+#ifdef _DEBUG
+        TRACE(_T("游戏%s\n"), PVZWinApp::gamePaused ? _T("暂停") : _T("继续"));
+#endif
+
+        // 刷新显示
+        Invalidate(TRUE);
+    }
+
+    CView::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
 void PVZView::OnSelect(UINT nFlags, CPoint point) {}

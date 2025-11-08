@@ -14,6 +14,8 @@ protected:
     void DrawGameOverScreen(CDC* cDC);
     //绘制重新开始按钮
     void DrawRestartButton(CDC* cDC);
+    //绘制暂停画面
+    void DrawPauseScreen(CDC* cDC);  // 新增：暂停画面
     //检查是否点击了重新开始按钮
     bool IsClickRestartButton(CPoint point);
     //在鼠标位置显示坐标
@@ -30,10 +32,11 @@ public:
     afx_msg void OnMouseMove(UINT nFlags, CPoint point);
     afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
     afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
+    afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);  // 新增：键盘事件
     afx_msg void OnSelect(UINT nFlags, CPoint point);
     afx_msg void OnPlace(UINT nFlags, CPoint point);
 
 private:
-    bool m_bTrackingCoordinates = false;  // 修改：跟踪坐标状态
-    CPoint m_lastMousePos;                // 新增：记录最后鼠标位置
+    bool m_bTrackingCoordinates = false;
+    CPoint m_lastMousePos;
 };

@@ -142,7 +142,7 @@ void PVZWinApp::gameTickLoop(HWND hWnd, UINT nMsg, UINT_PTR nIDEvent, DWORD dwTi
     }
 
     // 生成僵尸 - 融合两个版本的生成逻辑
-    if (Visible::currentGameTick % 500 == 0) {
+    if (Visible::currentGameTick % 50 == 0) {
         std::shared_ptr<Zombie> zombie;
         // 30%概率生成铁桶僵尸，70%概率生成普通僵尸
         if (rand() % 100 < 30) {
