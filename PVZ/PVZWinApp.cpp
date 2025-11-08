@@ -1,16 +1,17 @@
-#include "stdafx.h"
-#include "PVZWinApp.h"
-#include "Config.h"
-#include "NormalZombie.h"
-#include "BucketHeadZombie.h"
-#include "PVZFrameWnd.h"
-#include "PVZView.h"
-#include "Plant.h"
-#include "Sun.h"
-#include "Yard.h"
-#include "Zombie.h"
-#include "resource.h"
-#include <ctime>
+#include"stdafx.h"
+#include"PVZWinApp.h"
+#include"Config.h"
+#include"NormalZombie.h"
+#include"BucketHeadZombie.h"
+#include"PVZDoc.h"
+#include"PVZFrameWnd.h"
+#include"PVZView.h"
+#include"Plant.h"
+#include"Sun.h"
+#include"Yard.h"
+#include"Zombie.h"
+#include"resource.h"
+#include<ctime>
 
 PVZWinApp theApp;
 PVZDoc* theDoc;
@@ -20,85 +21,7 @@ bool PVZWinApp::gameOver = false;
 bool PVZWinApp::gamePaused = false;
 int PVZWinApp::score = 0;
 std::list<ScorePopup> PVZWinApp::scorePopups;
-int PVZWinApp::resetScoreCounter = -1;  // -1表示不需要重置分数
-
-void PVZWinApp::GameOver() {
-    gameOver = true;
-    gamePaused = true;
-}
-
-void PVZWinApp::AddScore(int points) {
-    // 如果正在重置分数，忽略加分
-    if (resetScoreCounter >= 0) {
-        return;
-    }
-    score += points;
-#ifdef _DEBUG
-    TRACE(_T("分数增加:+%d,当前分数:%d\n"), points, score);
-#endif
-}
-
-void PVZWinApp::AddScorePopup(int points, int x, int y) {
-    // 如果正在重置分数，忽略飘字
-    if (resetScoreCounter >= 0) {
-        return;
-    }
-
-    // 先增加实际分数
-    AddScore(points);
-
-    // 再显示飘字效果
-    ScorePopup popup;
-    popup.points = points;
-    popup.x = x - 50;
-    popup.y = y + 100;
-    popup.lifeTime = 0;
-    popup.maxLifeTime = 10;
-    popup.alpha = 1.0;
-    scorePopups.push_back(popup);
-}
-
-void PVZWinApp::ResetGame() {
-    // 立即重置游戏状态
-    gameOver = false;
-    gamePaused = false;
-    Visible::currentGameTick = 0;
-
-    // 立即清空其他内容
-    scorePopups.clear();
-
-    if (theDoc) {
-        Yard& yard = theDoc->getYard();
-        auto& sunList = theDoc->getSunList();
-        auto& zombieList = yard.getZombieList();
-        auto& ejectList = yard.getEjectList();
-
-        // 清空阳光列表
-        sunList.clear();
-
-        // 清空僵尸列表
-        for (int row = 0; row < 5; ++row) {
-            zombieList[row].clear();
-        }
-
-        // 清空植物矩阵
-        yard.foreach(yard.getPlantMatrix(), [](Yard::plant_iter& iter, int) {
-            *iter = nullptr;
-            });
-
-        // 清空投射物列表
-        for (int row = 0; row < 5; ++row) {
-            ejectList[row].clear();
-        }
-    }
-
-    // 设置分数重置计数器（等待3帧后重置分数）
-    resetScoreCounter = 3;
-
-#ifdef _DEBUG
-    TRACE(_T("游戏重置开始，分数将在3帧后重置为0\n"));
-#endif
-}
+int PVZWinApp::resetScoreCounter = -1;
 
 void PVZWinApp::mainLoop(HWND hWnd, UINT nMsg, UINT_PTR nIDEvent, DWORD dwTime) {
     updateScreen();
@@ -131,18 +54,10 @@ void PVZWinApp::gameTickLoop(HWND hWnd, UINT nMsg, UINT_PTR nIDEvent, DWORD dwTi
     // 处理分数重置逻辑
     if (resetScoreCounter > 0) {
         resetScoreCounter--;
-#ifdef _DEBUG
-        if (resetScoreCounter == 0) {
-            TRACE(_T("分数重置倒计时: 即将重置分数为0\n"));
-        }
-#endif
     }
     else if (resetScoreCounter == 0) {
         score = 0;  // 实际重置分数
         resetScoreCounter = -1;  // 重置完成
-#ifdef _DEBUG
-        TRACE(_T("分数已重置为0\n"));
-#endif
     }
 
     if (gameOver || gamePaused) return;
@@ -226,8 +141,8 @@ void PVZWinApp::gameTickLoop(HWND hWnd, UINT nMsg, UINT_PTR nIDEvent, DWORD dwTi
         sunList.push_front(sun);
     }
 
-    // 生成僵尸
-    if (Visible::currentGameTick % 5 == 0) {
+    // 生成僵尸 - 融合两个版本的生成逻辑
+    if (Visible::currentGameTick % 500 == 0) {
         std::shared_ptr<Zombie> zombie;
         // 30%概率生成铁桶僵尸，70%概率生成普通僵尸
         if (rand() % 100 < 30) {
@@ -249,6 +164,80 @@ void PVZWinApp::gameTickLoop(HWND hWnd, UINT nMsg, UINT_PTR nIDEvent, DWORD dwTi
 
     ++Visible::currentGameTick;
     theDoc->getSeedBank().updateAllSeedState();
+}
+
+void PVZWinApp::GameOver() {
+    gameOver = true;
+    gamePaused = true;
+}
+
+void PVZWinApp::AddScore(int points) {
+    // 如果正在重置分数，忽略加分
+    if (resetScoreCounter >= 0) {
+        return;
+    }
+    score += points;
+#ifdef _DEBUG
+    TRACE(_T("分数增加:+%d,当前分数:%d\n"), points, score);
+#endif
+}
+
+void PVZWinApp::AddScorePopup(int points, int x, int y) {
+    // 如果正在重置分数，忽略飘字
+    if (resetScoreCounter >= 0) {
+        return;
+    }
+
+    // 先增加实际分数
+    AddScore(points);
+
+    // 再显示飘字效果
+    ScorePopup popup;
+    popup.points = points;
+    popup.x = x - 50;
+    popup.y = y + 100;
+    popup.lifeTime = 0;
+    popup.maxLifeTime = 10;
+    popup.alpha = 1.0;
+    scorePopups.push_back(popup);
+}
+
+void PVZWinApp::ResetGame() {
+    // 立即重置游戏状态
+    gameOver = false;
+    gamePaused = false;
+    Visible::currentGameTick = 0;
+
+    // 立即清空其他内容
+    scorePopups.clear();
+
+    if (theDoc) {
+        Yard& yard = theDoc->getYard();
+        auto& sunList = theDoc->getSunList();
+        auto& zombieList = yard.getZombieList();
+        auto& ejectList = yard.getEjectList();
+
+        // 清空阳光列表
+        sunList.clear();
+
+        // 清空僵尸列表
+        for (int row = 0; row < 5; ++row) {
+            zombieList[row].clear();
+        }
+
+        // 清空植物矩阵
+        yard.foreach(yard.getPlantMatrix(), [](Yard::plant_iter& iter, int) {
+            *iter = nullptr;
+            });
+
+        // 清空投射物列表
+        for (int row = 0; row < 5; ++row) {
+            ejectList[row].clear();
+        }
+    }
+
+    // 设置分数重置计数器（等待3帧后重置分数）
+    resetScoreCounter = 3;
 }
 
 void PVZWinApp::updateScreen() {
