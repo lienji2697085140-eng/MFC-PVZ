@@ -59,18 +59,31 @@ void PVZView::OnDraw(CDC* pDC) {
     //绘制植物选项卡
     sbank.draw(memDC.m_hDC);
 
-    //绘制植物僵尸
-    yard.foreach(yard.getPlantMatrix(), [&](Yard::plant_iter& iter, int) {
-        if (*iter)(*iter)->draw(memDC.m_hDC);
-        });
+    //绘制植物 - 修复绘图调用
+    auto& plantMatrix = yard.getPlantMatrix();
+    for (int row = 0; row < 5; ++row) {
+        for (int col = 0; col < 9; ++col) {
+            if (plantMatrix[row][col]) {
+                plantMatrix[row][col]->draw(memDC.m_hDC);
+            }
+        }
+    }
 
-    yard.foreach(yard.getZombieList(), [&](Yard::zombie_iter& iter, int row) {
-        if (*iter)(*iter)->draw(memDC.m_hDC);
-        });
+    //绘制僵尸
+    auto& zombieList = yard.getZombieList();
+    for (int row = 0; row < 5; ++row) {
+        for (auto& zombie : zombieList[row]) {
+            if (zombie) zombie->draw(memDC.m_hDC);
+        }
+    }
 
-    yard.foreach(yard.getEjectList(), [&](Yard::ejects_iter& iter, int) {
-        if (*iter)(*iter)->draw(memDC.m_hDC);
-        });
+    //绘制投射物
+    auto& ejectList = yard.getEjectList();
+    for (int row = 0; row < 5; ++row) {
+        for (auto& eject : ejectList[row]) {
+            if (eject) eject->draw(memDC.m_hDC);
+        }
+    }
 
     //绘制选中的植物
     player.drawCurrentPlant(memDC.m_hDC, yard);
@@ -94,17 +107,84 @@ void PVZView::OnDraw(CDC* pDC) {
         DrawMouseCoordinates(pDC);
     }
 
+    //新增:绘制铲子按钮
+    DrawShovelButton(pDC);
+
     buf.DeleteObject();
     memDC.DeleteDC();
     font.DeleteObject();
 }
 
-// 修复：绘制暂停画面
+void PVZView::DrawShovelButton(CDC* cDC) {
+    CRect rect;
+    GetClientRect(&rect);
+
+    int shovelButtonWidth = 80;
+    int shovelButtonHeight = 40;
+    int shovelButtonX = rect.Width() - shovelButtonWidth - 20;
+    int shovelButtonY = 10;
+
+    //绘制铲子按钮背景
+    CRect shovelRect(shovelButtonX, shovelButtonY,
+        shovelButtonX + shovelButtonWidth,
+        shovelButtonY + shovelButtonHeight);
+
+    //根据铲子模式状态设置不同颜色
+    if (m_bShovelMode) {
+        cDC->FillSolidRect(shovelRect, RGB(255, 200, 200));  // 铲子模式时红色
+    }
+    else {
+        cDC->FillSolidRect(shovelRect, RGB(200, 200, 200));  // 正常模式时灰色
+    }
+
+    //绘制按钮边框
+    CPen pen(PS_SOLID, 2, RGB(100, 100, 100));
+    CPen* oldPen = cDC->SelectObject(&pen);
+    cDC->Rectangle(shovelRect);
+    cDC->SelectObject(oldPen);
+
+    //创建按钮字体
+    CFont font;
+    font.CreatePointFont(100, _T("微软雅黑"));
+    CFont* oldFont = cDC->SelectObject(&font);
+    COLORREF oldColor = cDC->SetTextColor(RGB(0, 0, 0));
+    int oldBkMode = cDC->SetBkMode(TRANSPARENT);
+
+    //绘制"铲子"文字
+    CString shovelText = _T("铲子");
+    CSize textSize = cDC->GetTextExtent(shovelText);
+    int textX = shovelButtonX + (shovelButtonWidth - textSize.cx) / 2;
+    int textY = shovelButtonY + (shovelButtonHeight - textSize.cy) / 2;
+    cDC->TextOut(textX, textY, shovelText);
+
+    //恢复原来的设置
+    cDC->SelectObject(oldFont);
+    cDC->SetTextColor(oldColor);
+    cDC->SetBkMode(oldBkMode);
+    font.DeleteObject();
+}
+
+bool PVZView::IsClickShovelButton(CPoint point) {
+    CRect rect;
+    GetClientRect(&rect);
+
+    int shovelButtonWidth = 80;
+    int shovelButtonHeight = 40;
+    int shovelButtonX = rect.Width() - shovelButtonWidth - 20;
+    int shovelButtonY = 10;
+
+    CRect shovelRect(shovelButtonX, shovelButtonY,
+        shovelButtonX + shovelButtonWidth,
+        shovelButtonY + shovelButtonHeight);
+
+    return shovelRect.PtInRect(point);
+}
+
 void PVZView::DrawPauseScreen(CDC* pDC) {
     CRect rect;
     GetClientRect(&rect);
 
-    //直接绘制游戏画面（不递归调用OnDraw）
+    //直接绘制游戏画面
     Yard& yard = theDoc->getYard();
     SeedBank& sbank = theDoc->getSeedBank();
     Player& player = theDoc->getPlayer();
@@ -129,18 +209,31 @@ void PVZView::DrawPauseScreen(CDC* pDC) {
     //绘制植物选项卡
     sbank.draw(memDC.m_hDC);
 
-    //绘制植物僵尸
-    yard.foreach(yard.getPlantMatrix(), [&](Yard::plant_iter& iter, int) {
-        if (*iter)(*iter)->draw(memDC.m_hDC);
-        });
+    //绘制植物 - 修复绘图调用
+    auto& plantMatrix = yard.getPlantMatrix();
+    for (int row = 0; row < 5; ++row) {
+        for (int col = 0; col < 9; ++col) {
+            if (plantMatrix[row][col]) {
+                plantMatrix[row][col]->draw(memDC.m_hDC);
+            }
+        }
+    }
 
-    yard.foreach(yard.getZombieList(), [&](Yard::zombie_iter& iter, int row) {
-        if (*iter)(*iter)->draw(memDC.m_hDC);
-        });
+    //绘制僵尸
+    auto& zombieList = yard.getZombieList();
+    for (int row = 0; row < 5; ++row) {
+        for (auto& zombie : zombieList[row]) {
+            if (zombie) zombie->draw(memDC.m_hDC);
+        }
+    }
 
-    yard.foreach(yard.getEjectList(), [&](Yard::ejects_iter& iter, int) {
-        if (*iter)(*iter)->draw(memDC.m_hDC);
-        });
+    //绘制投射物
+    auto& ejectList = yard.getEjectList();
+    for (int row = 0; row < 5; ++row) {
+        for (auto& eject : ejectList[row]) {
+            if (eject) eject->draw(memDC.m_hDC);
+        }
+    }
 
     //绘制选中的植物
     player.drawCurrentPlant(memDC.m_hDC, yard);
@@ -163,7 +256,7 @@ void PVZView::DrawPauseScreen(CDC* pDC) {
     BLENDFUNCTION blend;
     blend.BlendOp = AC_SRC_OVER;
     blend.BlendFlags = 0;
-    blend.SourceConstantAlpha = 128;  // 50%透明度
+    blend.SourceConstantAlpha = 128;
     blend.AlphaFormat = 0;
 
     //将半透明层混合到游戏画面上
@@ -221,48 +314,40 @@ void PVZView::DrawPauseScreen(CDC* pDC) {
     overlayDC.DeleteDC();
 }
 
-// 其他函数保持不变...
 void PVZView::DrawScorePopups(CDC* cDC) {
     if (PVZWinApp::scorePopups.empty()) return;
 
-    //创建字体
     CFont font;
     font.CreatePointFont(120, _T("微软雅黑"));
     CFont* oldFont = cDC->SelectObject(&font);
     int oldBkMode = cDC->SetBkMode(TRANSPARENT);
 
     for (const auto& popup : PVZWinApp::scorePopups) {
-        //根据透明度设置颜色(从红色渐变为黄色)
         int redValue = 255;
-        int greenValue = (int)(255 * (1.0 - popup.alpha));
+        int greenValue = static_cast<int>(255 * (1.0 - popup.alpha));  // 修复类型转换
         int blueValue = 0;
         COLORREF textColor = RGB(redValue, greenValue, blueValue);
         COLORREF oldColor = cDC->SetTextColor(textColor);
 
-        //格式化分数文本
         CString scoreText;
         scoreText.Format(_T("+%d"), popup.points);
 
-        //在指定位置绘制分数(应用缩放因子)
-        int screenX = (int)(popup.x * ZOOM_FACTOR);
-        int screenY = (int)(popup.y * ZOOM_FACTOR);
+        int screenX = static_cast<int>(popup.x * ZOOM_FACTOR);  // 修复类型转换
+        int screenY = static_cast<int>(popup.y * ZOOM_FACTOR);  // 修复类型转换
         cDC->TextOut(screenX, screenY, scoreText);
         cDC->SetTextColor(oldColor);
     }
 
-    //恢复设置
     cDC->SelectObject(oldFont);
     cDC->SetBkMode(oldBkMode);
     font.DeleteObject();
 }
 
 void PVZView::DrawGameOverScreen(CDC* cDC) {
-    //绘制全屏黑屏
     CRect rect;
     GetClientRect(&rect);
     cDC->FillSolidRect(&rect, RGB(0, 0, 0));
 
-    //创建大号字体
     CFont font;
     font.CreatePointFont(400, _T("微软雅黑"));
     CFont* oldFont = cDC->SelectObject(&font);
@@ -275,7 +360,6 @@ void PVZView::DrawGameOverScreen(CDC* cDC) {
     int y = (rect.Height() - textSize.cy) / 2 - 50;
     cDC->TextOut(x, y, gameOverText);
 
-    //显示最终分数
     CString finalScoreText;
     finalScoreText.Format(_T("最终分数:%d"), PVZWinApp::score);
     CSize scoreTextSize = cDC->GetTextExtent(finalScoreText);
@@ -283,13 +367,11 @@ void PVZView::DrawGameOverScreen(CDC* cDC) {
     int scoreY = y + textSize.cy + 20;
     cDC->TextOut(scoreX, scoreY, finalScoreText);
 
-    //恢复原来的设置
     cDC->SelectObject(oldFont);
     cDC->SetTextColor(oldColor);
     cDC->SetBkMode(oldBkMode);
     font.DeleteObject();
 
-    //绘制重新开始按钮
     DrawRestartButton(cDC);
 }
 
@@ -301,17 +383,14 @@ void PVZView::DrawRestartButton(CDC* cDC) {
     int buttonX = (rect.Width() - buttonWidth) / 2;
     int buttonY = rect.Height() - buttonHeight - 20;
 
-    //绘制灰色按钮背景
     CRect buttonRect(buttonX, buttonY, buttonX + buttonWidth, buttonY + buttonHeight);
     cDC->FillSolidRect(buttonRect, RGB(128, 128, 128));
 
-    //绘制按钮边框
     CPen pen(PS_SOLID, 2, RGB(200, 200, 200));
     CPen* oldPen = cDC->SelectObject(&pen);
     cDC->Rectangle(buttonRect);
     cDC->SelectObject(oldPen);
 
-    //创建按钮字体
     CFont font;
     font.CreatePointFont(200, _T("微软雅黑"));
     CFont* oldFont = cDC->SelectObject(&font);
@@ -324,7 +403,6 @@ void PVZView::DrawRestartButton(CDC* cDC) {
     int textY = buttonY + (buttonHeight - textSize.cy) / 2;
     cDC->TextOut(textX, textY, restartText);
 
-    //恢复原来的设置
     cDC->SelectObject(oldFont);
     cDC->SetTextColor(oldColor);
     cDC->SetBkMode(oldBkMode);
@@ -345,30 +423,23 @@ bool PVZView::IsClickRestartButton(CPoint point) {
 }
 
 void PVZView::DrawMouseCoordinates(CDC* cDC) {
-    //使用最后记录的鼠标位置
     CPoint point = m_lastMousePos;
 
-    //转换为游戏内坐标(除以缩放因子)
-    int gameX = (int)(point.x / ZOOM_FACTOR);
-    int gameY = (int)(point.y / ZOOM_FACTOR);
+    int gameX = static_cast<int>(point.x / ZOOM_FACTOR);  // 修复类型转换
+    int gameY = static_cast<int>(point.y / ZOOM_FACTOR);  // 修复类型转换
 
-    //创建字体
     CFont font;
     font.CreatePointFont(90, _T("微软雅黑"));
 
-    //保存原来的设置
     CFont* oldFont = cDC->SelectObject(&font);
     COLORREF oldColor = cDC->SetTextColor(RGB(255, 255, 0));
     int oldBkMode = cDC->SetBkMode(TRANSPARENT);
 
-    //格式化坐标字符串
     CString coordText;
     coordText.Format(_T("(%d,%d)"), gameX, gameY);
 
-    //在鼠标位置旁边显示坐标
     cDC->TextOut(point.x + 15, point.y + 15, coordText);
 
-    //恢复原来的设置
     cDC->SelectObject(oldFont);
     cDC->SetTextColor(oldColor);
     cDC->SetBkMode(oldBkMode);
@@ -376,21 +447,17 @@ void PVZView::DrawMouseCoordinates(CDC* cDC) {
 }
 
 void PVZView::DrawScore(CDC* cDC) {
-    //创建分数字体
     CFont font;
     font.CreatePointFont(120, _T("微软雅黑"));
     CFont* oldFont = cDC->SelectObject(&font);
     COLORREF oldColor = cDC->SetTextColor(RGB(255, 255, 0));
     int oldBkMode = cDC->SetBkMode(TRANSPARENT);
 
-    //格式化分数字符串
     CString scoreText;
     scoreText.Format(_T("分数:%d"), PVZWinApp::score);
 
-    //在左上角显示分数
     cDC->TextOut(10, 10, scoreText);
 
-    //恢复原来的设置
     cDC->SelectObject(oldFont);
     cDC->SetTextColor(oldColor);
     cDC->SetBkMode(oldBkMode);
@@ -398,7 +465,6 @@ void PVZView::DrawScore(CDC* cDC) {
 }
 
 void PVZView::OnMouseMove(UINT nFlags, CPoint point) {
-    //如果游戏暂停，不处理鼠标移动
     if (PVZWinApp::gamePaused && !PVZWinApp::gameOver) {
         CView::OnMouseMove(nFlags, point);
         return;
@@ -406,13 +472,10 @@ void PVZView::OnMouseMove(UINT nFlags, CPoint point) {
 
     if (m_pDocument) {
         Player& player = ((PVZDoc*)m_pDocument)->getPlayer();
-        //更新鼠标指针位置
-        player.setPos({ int(point.x / ZOOM_FACTOR), int(point.y / ZOOM_FACTOR) });
+        player.setPos({ static_cast<int>(point.x / ZOOM_FACTOR), static_cast<int>(point.y / ZOOM_FACTOR) });  // 修复类型转换
 
-        //如果正在跟踪坐标，记录当前位置并刷新显示
         if (m_bTrackingCoordinates) {
             m_lastMousePos = point;
-            //只刷新坐标显示区域，提高性能
             CRect rect(point.x, point.y, point.x + 100, point.y + 30);
             InvalidateRect(rect, FALSE);
         }
@@ -430,11 +493,65 @@ void PVZView::OnLButtonDown(UINT nFlags, CPoint point) {
     //如果游戏失败，检查是否点击了重新开始按钮
     if (PVZWinApp::gameOver) {
         if (IsClickRestartButton(point)) {
-            //重置游戏
             PVZWinApp::ResetGame();
             Invalidate(TRUE);
             return;
         }
+    }
+
+    //检查是否点击了铲子按钮
+    if (IsClickShovelButton(point)) {
+        m_bShovelMode = !m_bShovelMode;
+        Invalidate(FALSE);
+        return;
+    }
+
+    //铲子模式：移除植物
+    if (m_bShovelMode && m_pDocument) {
+        auto doc = (PVZDoc*)m_pDocument;
+        Yard& yard = doc->getYard();
+
+        //将点击位置转换为游戏坐标
+        int gameX = static_cast<int>(point.x / ZOOM_FACTOR);  // 修复类型转换
+        int gameY = static_cast<int>(point.y / ZOOM_FACTOR);  // 修复类型转换
+
+        //直接遍历植物矩阵来检测点击
+        bool plantRemoved = false;
+        auto& plantMatrix = yard.getPlantMatrix();
+
+        for (int row = 0; row < 5; ++row) {
+            for (int col = 0; col < 9; ++col) {
+                auto& plant = plantMatrix[row][col];
+                if (plant) {
+                    int plantLeftX = plant->getLeftX();
+                    int plantTopY = plant->getTopY();
+                    int plantRightX = plantLeftX + plant->getWidth();
+                    int plantBottomY = plantTopY + plant->getHeight();
+
+                    //检查点击位置是否在植物范围内
+                    if (gameX >= plantLeftX && gameX <= plantRightX &&
+                        gameY >= plantTopY && gameY <= plantBottomY) {
+                        //移除植物
+                        plant = nullptr;
+                        plantRemoved = true;
+
+#ifdef _DEBUG
+                        TRACE(_T("移除植物: 行%d, 列%d\n"), row, col);
+#endif
+
+                        break;
+                    }
+                }
+            }
+            if (plantRemoved) break;
+        }
+
+        if (plantRemoved) {
+            //退出铲子模式
+            m_bShovelMode = false;
+            Invalidate(FALSE);
+        }
+        return;
     }
 
     //正常的游戏点击逻辑
@@ -448,34 +565,35 @@ void PVZView::OnLButtonDown(UINT nFlags, CPoint point) {
         player.selectPlant(yard, sbank, point);
         player.collectSun(yard, sbank, sunList, point);
 
-        //点击时也刷新显示
         Invalidate(FALSE);
     }
 }
 
 void PVZView::OnRButtonDown(UINT nFlags, CPoint point) {
-    //如果游戏暂停，不处理右键点击
     if (PVZWinApp::gamePaused && !PVZWinApp::gameOver) {
         CView::OnRButtonDown(nFlags, point);
         return;
     }
 
-    // 切换坐标跟踪状态
+    //右键点击退出铲子模式
+    if (m_bShovelMode) {
+        m_bShovelMode = false;
+        Invalidate(FALSE);
+        return;
+    }
+
     m_bTrackingCoordinates = !m_bTrackingCoordinates;
 
     if (m_bTrackingCoordinates) {
-        // 开始跟踪：记录当前鼠标位置
         m_lastMousePos = point;
     }
 
-    // 刷新显示以更新坐标显示状态
     Invalidate(FALSE);
 
     CView::OnRButtonDown(nFlags, point);
 }
 
 void PVZView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
-    // 空格键暂停/继续游戏
     if (nChar == VK_SPACE && !PVZWinApp::gameOver) {
         PVZWinApp::gamePaused = !PVZWinApp::gamePaused;
 
@@ -483,8 +601,13 @@ void PVZView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
         TRACE(_T("游戏%s\n"), PVZWinApp::gamePaused ? _T("暂停") : _T("继续"));
 #endif
 
-        // 刷新显示
         Invalidate(TRUE);
+    }
+
+    // ESC键退出铲子模式
+    if (nChar == VK_ESCAPE && m_bShovelMode) {
+        m_bShovelMode = false;
+        Invalidate(FALSE);
     }
 
     CView::OnKeyDown(nChar, nRepCnt, nFlags);
