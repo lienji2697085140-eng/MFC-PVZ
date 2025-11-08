@@ -1,97 +1,94 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="源文件">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="头文件">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="资源文件">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="头文件\Zombie">
-      <UniqueIdentifier>{37b4803f-de45-4ce9-8221-13bb1529f2f6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="头文件\Plant">
-      <UniqueIdentifier>{64bf1440-d725-4faf-96e7-1ee45c2dcefc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="头文件\Ejects">
-      <UniqueIdentifier>{c94b0608-a396-49d0-8d9b-d8133c1fef7e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="头文件\MFC">
-      <UniqueIdentifier>{94939f6d-717a-44e6-aac9-ff90cbb5fc2c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\MFC">
-      <UniqueIdentifier>{7209f267-f58e-4a51-b9e8-7fcec88c386b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\other">
-      <UniqueIdentifier>{7b4e35e1-1f14-4140-ab7a-23d77e40b99b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\ejects">
-      <UniqueIdentifier>{6b6d3a82-4332-46cf-a958-82dfc8b29840}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\plant">
-      <UniqueIdentifier>{8377ddf0-db6a-4e4b-9d45-e2e54a7bd308}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\zomibe">
-      <UniqueIdentifier>{9dc7d11e-ce76-436e-bf21-84fbc8e6f024}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\recources">
-      <UniqueIdentifier>{2a1259c2-ebb8-426f-9b34-6bf8b4f9b132}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\base">
-      <UniqueIdentifier>{d0f7fb23-6b8f-43c7-b496-7c768cc6e0e7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="头文件\base">
-      <UniqueIdentifier>{c2730616-6693-4481-85ca-a8633de719fa}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="BucketHeadZombie.cpp">
+      <Filter>源文件\Zombie</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalZombie.cpp">
+      <Filter>源文件\Zombie</Filter>
+    </ClCompile>
+    <ClCompile Include="Zombie.cpp">
+      <Filter>源文件\Zombie</Filter>
+    </ClCompile>
+    <ClCompile Include="Chomper.cpp">
+      <Filter>源文件\Plant</Filter>
+    </ClCompile>
+    <ClCompile Include="PeaShooterSingle.cpp">
+      <Filter>源文件\Plant</Filter>
+    </ClCompile>
+    <ClCompile Include="Plant.cpp">
+      <Filter>源文件\Plant</Filter>
+    </ClCompile>
+    <ClCompile Include="Squash.cpp">
+      <Filter>源文件\Plant</Filter>
+    </ClCompile>
+    <ClCompile Include="SunFlower.cpp">
+      <Filter>源文件\Plant</Filter>
+    </ClCompile>
+    <ClCompile Include="Wallnut.cpp">
+      <Filter>源文件\Plant</Filter>
+    </ClCompile>
+    <ClCompile Include="SnowPeaShooter.cpp">
+      <Filter>源文件\Plant</Filter>
+    </ClCompile>
+    <ClCompile Include="Ejects.cpp">
+      <Filter>源文件\Ejects</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectilePea.cpp">
+      <Filter>源文件\Ejects</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectileSnowPea.cpp">
+      <Filter>源文件\Ejects</Filter>
+    </ClCompile>
+    <ClCompile Include="GameElement.cpp">
+      <Filter>源文件\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEntity.cpp">
+      <Filter>源文件\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Visible.cpp">
+      <Filter>源文件\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="PVZDoc.cpp">
+      <Filter>源文件\MFC</Filter>
+    </ClCompile>
+    <ClCompile Include="PVZFrameWnd.cpp">
+      <Filter>源文件\MFC</Filter>
+    </ClCompile>
+    <ClCompile Include="PVZView.cpp">
+      <Filter>源文件\MFC</Filter>
+    </ClCompile>
+    <ClCompile Include="PVZWinApp.cpp">
+      <Filter>源文件\MFC</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>源文件\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="Seed.cpp">
+      <Filter>源文件\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="SeedBank.cpp">
+      <Filter>源文件\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="Sun.cpp">
+      <Filter>源文件\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="Yard.cpp">
+      <Filter>源文件\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManage.cpp">
+      <Filter>源文件\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Yard.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="GameElement.h">
+      <Filter>头文件\Base</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="GameEntity.h">
+      <Filter>头文件\Base</Filter>
     </ClInclude>
-    <ClInclude Include="Config.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="SeedBank.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Seed.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Sun.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="NormalZombie.h">
-      <Filter>头文件\Zombie</Filter>
-    </ClInclude>
-    <ClInclude Include="Zombie.h">
-      <Filter>头文件\Zombie</Filter>
-    </ClInclude>
-    <ClInclude Include="SunFlower.h">
-      <Filter>头文件\Plant</Filter>
-    </ClInclude>
-    <ClInclude Include="Plant.h">
-      <Filter>头文件\Plant</Filter>
-    </ClInclude>
-    <ClInclude Include="ResoucreConfig.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceManage.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="PeaShooterSingle.h">
-      <Filter>头文件\Plant</Filter>
-    </ClInclude>
-    <ClInclude Include="SnowPeaShootter.h">
-      <Filter>头文件\Plant</Filter>
+    <ClInclude Include="Visible.h">
+      <Filter>头文件\Base</Filter>
     </ClInclude>
     <ClInclude Include="Ejects.h">
       <Filter>头文件\Ejects</Filter>
@@ -114,115 +111,122 @@
     <ClInclude Include="PVZWinApp.h">
       <Filter>头文件\MFC</Filter>
     </ClInclude>
+    <ClInclude Include="ResourceManage.h">
+      <Filter>头文件\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>头文件\other</Filter>
+    </ClInclude>
+    <ClInclude Include="Seed.h">
+      <Filter>头文件\other</Filter>
+    </ClInclude>
+    <ClInclude Include="SeedBank.h">
+      <Filter>头文件\other</Filter>
+    </ClInclude>
+    <ClInclude Include="Sun.h">
+      <Filter>头文件\other</Filter>
+    </ClInclude>
+    <ClInclude Include="Yard.h">
+      <Filter>头文件\other</Filter>
+    </ClInclude>
+    <ClInclude Include="BucketHeadZombie.h">
+      <Filter>头文件\Zombie</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalZombie.h">
+      <Filter>头文件\Zombie</Filter>
+    </ClInclude>
+    <ClInclude Include="Zombie.h">
+      <Filter>头文件\Zombie</Filter>
+    </ClInclude>
     <ClInclude Include="resource.h">
-      <Filter>头文件\MFC</Filter>
+      <Filter>头文件\Resource</Filter>
     </ClInclude>
-    <ClInclude Include="GameElement.h">
-      <Filter>头文件\base</Filter>
-    </ClInclude>
-    <ClInclude Include="GameEntity.h">
-      <Filter>头文件\base</Filter>
-    </ClInclude>
-    <ClInclude Include="Visible.h">
-      <Filter>头文件\base</Filter>
-    </ClInclude>
-    <ClInclude Include="Wallnut.h">
-      <Filter>头文件\Plant</Filter>
+    <ClInclude Include="ResoucreConfig.h">
+      <Filter>头文件\Resource</Filter>
     </ClInclude>
     <ClInclude Include="Chomper.h">
+      <Filter>头文件\Plant</Filter>
+    </ClInclude>
+    <ClInclude Include="PeaShooterSingle.h">
+      <Filter>头文件\Plant</Filter>
+    </ClInclude>
+    <ClInclude Include="Plant.h">
+      <Filter>头文件\Plant</Filter>
+    </ClInclude>
+    <ClInclude Include="SnowPeaShootter.h">
       <Filter>头文件\Plant</Filter>
     </ClInclude>
     <ClInclude Include="Squash.h">
       <Filter>头文件\Plant</Filter>
     </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="SunFlower.h">
+      <Filter>头文件\Plant</Filter>
     </ClInclude>
-    <ClInclude Include="BucketHeadZombie.h">
-      <Filter>头文件\Zombie</Filter>
+    <ClInclude Include="Wallnut.h">
+      <Filter>头文件\Plant</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>头文件\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>头文件\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SunFlower.cpp">
-      <Filter>源文件\plant</Filter>
-    </ClCompile>
-    <ClCompile Include="Plant.cpp">
-      <Filter>源文件\plant</Filter>
-    </ClCompile>
-    <ClCompile Include="SnowPeaShooter.cpp">
-      <Filter>源文件\plant</Filter>
-    </ClCompile>
-    <ClCompile Include="PeaShooterSingle.cpp">
-      <Filter>源文件\plant</Filter>
-    </ClCompile>
-    <ClCompile Include="Ejects.cpp">
-      <Filter>源文件\ejects</Filter>
-    </ClCompile>
-    <ClCompile Include="ProjectilePea.cpp">
-      <Filter>源文件\ejects</Filter>
-    </ClCompile>
-    <ClCompile Include="ProjectileSnowPea.cpp">
-      <Filter>源文件\ejects</Filter>
-    </ClCompile>
-    <ClCompile Include="PVZDoc.cpp">
-      <Filter>源文件\MFC</Filter>
-    </ClCompile>
-    <ClCompile Include="PVZFrameWnd.cpp">
-      <Filter>源文件\MFC</Filter>
-    </ClCompile>
-    <ClCompile Include="PVZView.cpp">
-      <Filter>源文件\MFC</Filter>
-    </ClCompile>
-    <ClCompile Include="PVZWinApp.cpp">
-      <Filter>源文件\MFC</Filter>
-    </ClCompile>
-    <ClCompile Include="NormalZombie.cpp">
-      <Filter>源文件\zomibe</Filter>
-    </ClCompile>
-    <ClCompile Include="Zombie.cpp">
-      <Filter>源文件\zomibe</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManage.cpp">
-      <Filter>源文件\recources</Filter>
-    </ClCompile>
-    <ClCompile Include="GameElement.cpp">
-      <Filter>源文件\base</Filter>
-    </ClCompile>
-    <ClCompile Include="Visible.cpp">
-      <Filter>源文件\base</Filter>
-    </ClCompile>
-    <ClCompile Include="Seed.cpp">
-      <Filter>源文件\other</Filter>
-    </ClCompile>
-    <ClCompile Include="SeedBank.cpp">
-      <Filter>源文件\other</Filter>
-    </ClCompile>
-    <ClCompile Include="Sun.cpp">
-      <Filter>源文件\other</Filter>
-    </ClCompile>
-    <ClCompile Include="Yard.cpp">
-      <Filter>源文件\other</Filter>
-    </ClCompile>
-    <ClCompile Include="GameEntity.cpp">
-      <Filter>源文件\base</Filter>
-    </ClCompile>
-    <ClCompile Include="Wallnut.cpp">
-      <Filter>源文件\plant</Filter>
-    </ClCompile>
-    <ClCompile Include="Chomper.cpp">
-      <Filter>源文件\plant</Filter>
-    </ClCompile>
-    <ClCompile Include="Squash.cpp">
-      <Filter>源文件\plant</Filter>
-    </ClCompile>
-<<<<<<< HEAD
-    <ClCompile Include="BucketHeadZombie.cpp">
-      <Filter>源文件\zomibe</Filter>
-=======
-    <ClCompile Include="Player.cpp">
-      <Filter>源文件\plant</Filter>
->>>>>>> fix-snowpea-color-effect
-    </ClCompile>
+    <Text Include="README.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{41724c13-8a76-4e47-bc7c-16fa8ab6a1b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{2e6e84c0-ba9e-42a5-bf62-5d13f1f4b60f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\MFC">
+      <UniqueIdentifier>{fdd2daec-fd38-4d0c-9910-38bc4a7b5245}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Plant">
+      <UniqueIdentifier>{4eb82245-550a-4e10-a905-93c1a421d9e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Zombie">
+      <UniqueIdentifier>{8e67fb15-f2c4-4a95-a44c-4cbba41f4bf8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\other">
+      <UniqueIdentifier>{774b6a64-5b29-459b-b1f3-dfda6c40eaf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Resource">
+      <UniqueIdentifier>{1acb7922-b4f7-4943-a086-d58982d1e7fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Base">
+      <UniqueIdentifier>{8d1a766e-e1ee-46fd-9b95-058ad916f86e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Ejects">
+      <UniqueIdentifier>{3b902921-cc70-4375-8f18-2d93609da67d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Base">
+      <UniqueIdentifier>{e53590c1-d443-4dc5-9abe-b50780dfad6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Ejects">
+      <UniqueIdentifier>{d805a9cd-55a5-4b34-be07-9c40515ce4b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\MFC">
+      <UniqueIdentifier>{ada2ce44-a72e-489d-be94-c06f84e21729}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Other">
+      <UniqueIdentifier>{0f5f708e-b893-4b92-885e-ed7da5640f1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Plant">
+      <UniqueIdentifier>{4459ab42-dc0e-4fff-b032-d94dae0fb18f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Resources">
+      <UniqueIdentifier>{d421fc9d-f331-4402-89b7-aaf19a8cc2ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Zombie">
+      <UniqueIdentifier>{52ff89be-e974-44b8-9020-0290d944def6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{cb226920-ac0d-4b28-9906-5831d6b1e959}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PVZ.rc">
@@ -233,8 +237,5 @@
     <None Include="cursor1.cur">
       <Filter>资源文件</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="README.txt" />
   </ItemGroup>
 </Project>
