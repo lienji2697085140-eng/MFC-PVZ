@@ -59,7 +59,7 @@ void PVZView::OnDraw(CDC* pDC) {
     //绘制植物选项卡
     sbank.draw(memDC.m_hDC);
 
-    //绘制植物 - 修复绘图调用
+    //绘制植物
     auto& plantMatrix = yard.getPlantMatrix();
     for (int row = 0; row < 5; ++row) {
         for (int col = 0; col < 9; ++col) {
@@ -110,9 +110,94 @@ void PVZView::OnDraw(CDC* pDC) {
     //新增:绘制铲子按钮
     DrawShovelButton(pDC);
 
+    //新增:如果处于铲子模式，绘制铲子光标
+    if (m_bShovelMode) {
+        DrawShovelCursor(pDC);
+    }
+
     buf.DeleteObject();
     memDC.DeleteDC();
     font.DeleteObject();
+}
+
+void PVZView::DrawShovelCursor(CDC* cDC) {
+    //获取当前鼠标位置
+    CPoint point;
+    GetCursorPos(&point);
+    ScreenToClient(&point);
+
+    //更新铲子光标位置
+    m_shovelCursorPos = point;
+
+    //铲子尺寸
+    int shovelWidth = 40;
+    int shovelHeight = 60;
+
+    //铲子位置（以鼠标位置为中心）
+    int shovelX = point.x - shovelWidth / 2;
+    int shovelY = point.y - shovelHeight / 2;
+
+    //创建内存DC用于双缓冲
+    CDC memDC;
+    CBitmap buf;
+    memDC.CreateCompatibleDC(cDC);
+    buf.CreateCompatibleBitmap(cDC, shovelWidth, shovelHeight);
+    memDC.SelectObject(&buf);
+
+    //绘制透明背景
+    memDC.FillSolidRect(0, 0, shovelWidth, shovelHeight, RGB(255, 255, 255));
+    memDC.SetBkMode(TRANSPARENT);
+
+    //绘制铲子把手（棕色矩形）
+    int handleWidth = 8;
+    int handleHeight = 40;
+    int handleX = shovelWidth / 2 - handleWidth / 2;
+    int handleY = 5;
+
+    CBrush handleBrush(RGB(139, 69, 19));  // 棕色
+    CBrush* oldBrush = memDC.SelectObject(&handleBrush);
+    memDC.Rectangle(handleX, handleY, handleX + handleWidth, handleY + handleHeight);
+
+    //绘制铲子头部（灰色梯形）
+    int headTopWidth = 25;
+    int headBottomWidth = 30;
+    int headHeight = 20;
+    int headTopX = shovelWidth / 2 - headTopWidth / 2;
+    int headBottomX = shovelWidth / 2 - headBottomWidth / 2;
+    int headY = handleY + handleHeight;
+
+    CBrush headBrush(RGB(192, 192, 192));  // 灰色
+    memDC.SelectObject(&headBrush);
+
+    POINT headPoints[4] = {
+        {headTopX, headY},
+        {headTopX + headTopWidth, headY},
+        {headBottomX + headBottomWidth, headY + headHeight},
+        {headBottomX, headY + headHeight}
+    };
+    memDC.Polygon(headPoints, 4);
+
+    //绘制铲子边框
+    CPen borderPen(PS_SOLID, 2, RGB(0, 0, 0));
+    CPen* oldPen = memDC.SelectObject(&borderPen);
+    memDC.SelectStockObject(NULL_BRUSH);
+    memDC.Rectangle(handleX, handleY, handleX + handleWidth, handleY + handleHeight);
+    memDC.Polygon(headPoints, 4);
+
+    //恢复原来的设置
+    memDC.SelectObject(oldBrush);
+    memDC.SelectObject(oldPen);
+
+    //使用透明色过滤白色背景
+    TransparentBlt(cDC->m_hDC, shovelX, shovelY, shovelWidth, shovelHeight,
+        memDC.m_hDC, 0, 0, shovelWidth, shovelHeight, RGB(255, 255, 255));
+
+    //清理资源
+    buf.DeleteObject();
+    memDC.DeleteDC();
+    handleBrush.DeleteObject();
+    headBrush.DeleteObject();
+    borderPen.DeleteObject();
 }
 
 void PVZView::DrawShovelButton(CDC* cDC) {
@@ -209,7 +294,7 @@ void PVZView::DrawPauseScreen(CDC* pDC) {
     //绘制植物选项卡
     sbank.draw(memDC.m_hDC);
 
-    //绘制植物 - 修复绘图调用
+    //绘制植物
     auto& plantMatrix = yard.getPlantMatrix();
     for (int row = 0; row < 5; ++row) {
         for (int col = 0; col < 9; ++col) {
@@ -313,7 +398,6 @@ void PVZView::DrawPauseScreen(CDC* pDC) {
     memDC.DeleteDC();
     overlayDC.DeleteDC();
 }
-
 void PVZView::DrawScorePopups(CDC* cDC) {
     if (PVZWinApp::scorePopups.empty()) return;
 
@@ -324,7 +408,7 @@ void PVZView::DrawScorePopups(CDC* cDC) {
 
     for (const auto& popup : PVZWinApp::scorePopups) {
         int redValue = 255;
-        int greenValue = static_cast<int>(255 * (1.0 - popup.alpha));  // 修复类型转换
+        int greenValue = static_cast<int>(255 * (1.0 - popup.alpha));
         int blueValue = 0;
         COLORREF textColor = RGB(redValue, greenValue, blueValue);
         COLORREF oldColor = cDC->SetTextColor(textColor);
@@ -332,8 +416,8 @@ void PVZView::DrawScorePopups(CDC* cDC) {
         CString scoreText;
         scoreText.Format(_T("+%d"), popup.points);
 
-        int screenX = static_cast<int>(popup.x * ZOOM_FACTOR);  // 修复类型转换
-        int screenY = static_cast<int>(popup.y * ZOOM_FACTOR);  // 修复类型转换
+        int screenX = static_cast<int>(popup.x * ZOOM_FACTOR);
+        int screenY = static_cast<int>(popup.y * ZOOM_FACTOR);
         cDC->TextOut(screenX, screenY, scoreText);
         cDC->SetTextColor(oldColor);
     }
@@ -425,8 +509,8 @@ bool PVZView::IsClickRestartButton(CPoint point) {
 void PVZView::DrawMouseCoordinates(CDC* cDC) {
     CPoint point = m_lastMousePos;
 
-    int gameX = static_cast<int>(point.x / ZOOM_FACTOR);  // 修复类型转换
-    int gameY = static_cast<int>(point.y / ZOOM_FACTOR);  // 修复类型转换
+    int gameX = static_cast<int>(point.x / ZOOM_FACTOR);
+    int gameY = static_cast<int>(point.y / ZOOM_FACTOR);
 
     CFont font;
     font.CreatePointFont(90, _T("微软雅黑"));
@@ -472,12 +556,17 @@ void PVZView::OnMouseMove(UINT nFlags, CPoint point) {
 
     if (m_pDocument) {
         Player& player = ((PVZDoc*)m_pDocument)->getPlayer();
-        player.setPos({ static_cast<int>(point.x / ZOOM_FACTOR), static_cast<int>(point.y / ZOOM_FACTOR) });  // 修复类型转换
+        player.setPos({ static_cast<int>(point.x / ZOOM_FACTOR), static_cast<int>(point.y / ZOOM_FACTOR) });
 
         if (m_bTrackingCoordinates) {
             m_lastMousePos = point;
             CRect rect(point.x, point.y, point.x + 100, point.y + 30);
             InvalidateRect(rect, FALSE);
+        }
+
+        //如果处于铲子模式，刷新铲子光标位置
+        if (m_bShovelMode) {
+            Invalidate(FALSE);  //刷新整个窗口以更新铲子位置
         }
     }
     CView::OnMouseMove(nFlags, point);
@@ -512,8 +601,8 @@ void PVZView::OnLButtonDown(UINT nFlags, CPoint point) {
         Yard& yard = doc->getYard();
 
         //将点击位置转换为游戏坐标
-        int gameX = static_cast<int>(point.x / ZOOM_FACTOR);  // 修复类型转换
-        int gameY = static_cast<int>(point.y / ZOOM_FACTOR);  // 修复类型转换
+        int gameX = static_cast<int>(point.x / ZOOM_FACTOR);
+        int gameY = static_cast<int>(point.y / ZOOM_FACTOR);
 
         //直接遍历植物矩阵来检测点击
         bool plantRemoved = false;
