@@ -438,7 +438,7 @@ void PVZView::DrawGameOverScreen(CDC* cDC) {
     COLORREF oldColor = cDC->SetTextColor(RGB(255, 0, 0));
     int oldBkMode = cDC->SetBkMode(TRANSPARENT);
 
-    CString gameOverText = _T("ÓÎÏ·Ê§°Ü");
+    CString gameOverText = _T("ÓÎÏ·½áÊø");
     CSize textSize = cDC->GetTextExtent(gameOverText);
     int x = (rect.Width() - textSize.cx) / 2;
     int y = (rect.Height() - textSize.cy) / 2 - 50;
