@@ -6,8 +6,8 @@ class BucketHeadZombie : public Zombie {
     DECLARE_DYNCREATE(BucketHeadZombie)
 
 private:
-    static constexpr int HP = 540;  // 铁桶僵尸有更高的生命值
-    static constexpr double MOVESPEED = 0.00018;  // 比普通僵尸稍慢
+    static constexpr int HP = 800;  // 铁桶僵尸有更高的生命值
+    static constexpr double MOVESPEED = 0.0003;  // 比普通僵尸稍快
     static constexpr int HURT = 60;  // 伤害值与普通僵尸相同
 
 public:
