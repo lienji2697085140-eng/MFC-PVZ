@@ -15,10 +15,14 @@
 
 ### 1.2 基础交互与界面
 - **操作交互**：支持鼠标点击种植植物（从卡槽拖拽至网格）、收集阳光（点击空中掉落的阳光）、使用铲子工具（移除已种植植物），键盘操作包含“空格键暂停/继续”“ESC键退出铲子模式”，满足基础游玩操作需求。
-- **界面显示**：主界面实时展示阳光数量（种植植物的消耗单位）、当前分数（击杀僵尸+时间累积）、植物卡槽（含冷却时间提示），状态界面包含暂停画面（半透明覆盖层）、游戏结束结算界面，支持多分辨率设备适配（如iPhone14 Pro Max、iPad Pro）。
+- **界面显示**：主界面实时展示阳光数量（种植植物的消耗单位）、当前分数（击杀僵尸+时间累积）、植物卡槽（含冷却时间提示），状态界面包含暂停画面（半透明覆盖层）、游戏结束结算界面，支持多分辨率设备适配。
+- ![pause](https://github.com/user-attachments/assets/ef5cc33a-fdd1-45e2-bc10-7c0eb9ffae25)
+- ![restartchomper-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/8fff8240-7e4e-4484-8c8f-882fc58d9c12)
+
+
 
 ### 1.3 基础数据与资源管理
-- **数据存储**：维护游戏状态数据（分数、阳光、冷却时间）、配置数据（植物/僵尸属性：豌豆射手攻击力20、普通僵尸HP180、铁桶僵尸HP540）、临时数据（场上植物/僵尸/投射物实例），确保游戏过程数据实时更新。
+- **数据存储**：维护游戏状态数据（分数、阳光、冷却时间）、配置数据（植物/僵尸属性：豌豆射手攻击力20、普通僵尸HP300、铁桶僵尸HP800）、临时数据（场上植物/僵尸/投射物实例），确保游戏过程数据实时更新。
 - **资源加载**：通过`ResourceManage`类统一加载植物/僵尸精灵图、特效动画（如寒冰冰晶、分数飘字）、界面元素，采用预加载与缓存机制，避免重复IO操作，提升画面渲染流畅度。
 
 
@@ -74,10 +78,12 @@ void PeaShooterSingle::skill() {
     }
 }
 ```
-<img width="800" height="439" alt="image" src="https://github.com/user-attachments/assets/2be37596-a40d-4559-af7a-b94c27a2d1c8" />
+![snow-ezgif com-crop](https://github.com/user-attachments/assets/5338f7ad-d4f6-4681-9cab-420f11f0ce93)
+![pea](https://github.com/user-attachments/assets/342296fd-c395-4572-86de-fa438e27e5c8)
 
 - **铲子工具新增**：玩家可点击“铲子按钮”进入移除模式，左键点击已种植植物即可删除，解决原作中“种植错误后无法调整”的问题，优化布局灵活性。
-<img width="125" height="83" alt="image" src="https://github.com/user-attachments/assets/8feda70c-d434-4735-9178-38d7d75fec04" />
+![shovel](https://github.com/user-attachments/assets/809b4ae8-1411-4ce2-bfa4-d0358e13b68d)
+
 
 #### 2.2.2 僵尸系统扩展与分数机制
 - **新增铁桶僵尸**：相比普通僵尸，生命值提升至800（普通僵尸300）、移动速度降低至0.0003（普通僵尸0.0002），击败后获得30分（普通僵尸10分），增加游戏策略多样性（需用高伤害植物优先击破）。
@@ -95,7 +101,8 @@ void PVZWinApp::AddScorePopup(int points, int x, int y) {
     scorePopups.push_back(popup);
 }
 ```
-<img width="800" height="257" alt="image" src="https://github.com/user-attachments/assets/5152ac2c-a2ab-4025-8910-360702baa180" />
+![pea](https://github.com/user-attachments/assets/ac9c9c5b-6518-4e05-808e-24aa73383fa6)
+
 
 ### 2.3 性能与开发效率优化
 #### 2.3.1 代码重构与模块化
