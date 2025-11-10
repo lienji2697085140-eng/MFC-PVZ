@@ -12,7 +12,7 @@ public:
   // 植物基本属性
   static constexpr int HP = 3000;
   static constexpr int PLANT_TIME = 200;
-  static constexpr int PRICE = 0;
+  static constexpr int PRICE = 50;
 
 public:
   Wallnut();

@@ -17,7 +17,7 @@ public:
 public:
   static constexpr int HP = 300;
   static constexpr int PLANTTIME = 150;
-  static constexpr int PRICE = 0;
+  static constexpr int PRICE = 25;
   // static constexpr int SKILL_MAX_TIME = 50;
 
 private:

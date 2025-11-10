@@ -12,9 +12,9 @@ public:
   // 植物基本属性
   static constexpr int HP = 300;
   static constexpr int PLANT_TIME = 200;
-  static constexpr int PRICE = 50;
+  static constexpr int PRICE = 0;
   // 15秒产生一次阳光
-  static constexpr int SKILL_MAX_TIME = 1500;
+  static constexpr int SKILL_MAX_TIME = 450;
 
 public:
   SunFlower();

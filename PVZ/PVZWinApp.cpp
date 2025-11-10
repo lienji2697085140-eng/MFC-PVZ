@@ -128,7 +128,7 @@ void PVZWinApp::gameTickLoop(HWND hWnd, UINT nMsg, UINT_PTR nIDEvent, DWORD dwTi
     yard.update();
 
     // 自然生成阳光
-    if (Visible::currentGameTick % 700 == 0) {
+    if (Visible::currentGameTick % 300 == 0) {
         int stX = (int)(yard.getWidth() / 6 + rand() % (int)(yard.getWidth() * 0.8));
         int stY = 80 + rand() % 40;
         int lifeTime = 2000 + rand() % 200;
@@ -142,7 +142,7 @@ void PVZWinApp::gameTickLoop(HWND hWnd, UINT nMsg, UINT_PTR nIDEvent, DWORD dwTi
     }
 
     // 生成僵尸 - 融合两个版本的生成逻辑
-    if (Visible::currentGameTick % 50 == 0) {
+    if (Visible::currentGameTick % 250 == 0) {
         std::shared_ptr<Zombie> zombie;
         // 30%概率生成铁桶僵尸，70%概率生成普通僵尸
         if (rand() % 100 < 30) {
