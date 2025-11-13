@@ -1,4 +1,4 @@
-#include"stdafx.h"
+ï»¿#include"stdafx.h"
 #include"PVZWinApp.h"
 #include"Config.h"
 #include"NormalZombie.h"
@@ -16,9 +16,69 @@
 PVZWinApp theApp;
 PVZDoc* theDoc;
 
-// ¾²Ì¬³ÉÔ±±äÁ¿¶¨Òå
+// é™æ€æˆå‘˜å˜é‡å®šä¹‰
 bool PVZWinApp::gameOver = false;
 bool PVZWinApp::gamePaused = false;
+ /*// PVZWinApp.cpp ä¸‰æ¨¡å¼åˆ‡æ¢æ ¸å¿ƒé€»è¾‘
+bool PVZWinApp::isTestMode = false; // å…¨å±€æ¨¡å¼æ ‡å¿—
+
+void PVZWinApp::toggleGameMode() {
+    isTestMode = !isTestMode;
+    ResetGame(); // åˆ‡æ¢æ¨¡å¼æ—¶é‡ç½®æ¸¸æˆ
+    // æ ¹æ®æ¨¡å¼è°ƒæ•´æ¸¸æˆå‚æ•°
+    if (isTestMode) {
+        // æµ‹è¯•æ¨¡å¼ï¼šæ¤ç‰©å†·å´å‡åŠã€å¯ç”¨è°ƒè¯•æ˜¾ç¤º
+        Plant::setCoolDownRatio(0.5); 
+        PVZView::enableDebugDisplay(true);
+    } else {
+        // ç©å®¶æ¨¡å¼ï¼šæ¢å¤é»˜è®¤å‚æ•°ã€ç¦ç”¨è°ƒè¯•æ˜¾ç¤º
+        Plant::setCoolDownRatio(1.0);
+        PVZView::enableDebugDisplay(false);
+    }
+    // æ›´æ–°ç•Œé¢æ¨¡å¼æç¤º
+    if (theDoc && theDoc->getYard().getModeLabel()) {
+        CString modeText = isTestMode ? _T("å½“å‰æ¨¡å¼ï¼šTest Mode") : _T("å½“å‰æ¨¡å¼ï¼šPlayer Mode");
+        theDoc->getYard().getModeLabel()->SetWindowText(modeText);
+    }
+}
+
+// PVZView.cpp å¿«æ·é”®è§¦å‘æ¨¡å¼åˆ‡æ¢
+void PVZView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
+    // F1é”®åˆ‡æ¢æ¨¡å¼
+    if (nChar == VK_F1) {
+        PVZWinApp::toggleGameMode();
+        Invalidate(TRUE);
+        return;
+    }
+    // å…¶ä»–æŒ‰é”®é€»è¾‘ï¼ˆç©ºæ ¼æš‚åœã€ESCé€€å‡ºé“²å­æ¨¡å¼ç­‰ï¼‰
+    // ...
+}*//*// PVZView.cpp Test Modeç”Ÿæˆæµ‹è¯•åƒµå°¸
+void PVZView::OnLButtonDown(UINT nFlags, CPoint point) {
+    // ç©å®¶æ¨¡å¼é€»è¾‘ï¼ˆç§æ¤æ¤ç‰©ã€æ”¶é›†é˜³å…‰ç­‰ï¼‰
+    // ...
+
+    // Test Modeï¼šå·¦é”®ç”Ÿæˆæµ‹è¯•åƒµå°¸
+    if (PVZWinApp::isTestMode && !m_bShovelMode) {
+        auto doc = (PVZDoc*)m_pDocument;
+        Yard& yard = doc->getYard();
+        int gameX = static_cast<int>(point.x / ZOOM_FACTOR);
+        int gameY = static_cast<int>(point.y / ZOOM_FACTOR);
+
+        // è®¡ç®—ç”Ÿæˆè¡Œæ•°ï¼ˆæ ¹æ®ç‚¹å‡»Yåæ ‡ï¼‰
+        int row = (gameY - yard.getPlantTopY()) / yard.getPlantHeight();
+        if (row >= 0 && row < 5) {
+            // ç”Ÿæˆé“æ¡¶åƒµå°¸ï¼ˆæµ‹è¯•ç”¨ï¼‰
+            std::shared_ptr<Zombie> testZombie = std::make_shared<BucketHeadZombie>();
+            testZombie->setMapState(Zombie::MoveDynamic);
+            testZombie->setLeftX(yard.getWidth() * 0.6); // ç”Ÿæˆä½ç½®åœ¨åœºåœ°å³ä¾§
+            testZombie->setTopY(yard.getPlantTopY() + row * yard.getPlantHeight() - testZombie->getHeight() * 0.35);
+            testZombie->addState(Zombie::MOVE);
+            yard.getZombieList()[row].push_back(testZombie);
+            Invalidate(FALSE);
+        }
+        return;
+    }
+}*/
 int PVZWinApp::score = 0;
 std::list<ScorePopup> PVZWinApp::scorePopups;
 int PVZWinApp::resetScoreCounter = -1;
@@ -34,7 +94,7 @@ void PVZWinApp::animationLoop(HWND hWnd, UINT nMsg, UINT_PTR nIDEvent, DWORD dwT
 
     loadNextFPS();
 
-    // ¸üĞÂ·ÖÊıÆ®×ÖĞ§¹û
+    // æ›´æ–°åˆ†æ•°é£˜å­—æ•ˆæœ
     auto popupIter = scorePopups.begin();
     while (popupIter != scorePopups.end()) {
         popupIter->lifeTime++;
@@ -51,13 +111,13 @@ void PVZWinApp::animationLoop(HWND hWnd, UINT nMsg, UINT_PTR nIDEvent, DWORD dwT
 }
 
 void PVZWinApp::gameTickLoop(HWND hWnd, UINT nMsg, UINT_PTR nIDEvent, DWORD dwTime) {
-    // ´¦Àí·ÖÊıÖØÖÃÂß¼­
+    // å¤„ç†åˆ†æ•°é‡ç½®é€»è¾‘
     if (resetScoreCounter > 0) {
         resetScoreCounter--;
     }
     else if (resetScoreCounter == 0) {
-        score = 0;  // Êµ¼ÊÖØÖÃ·ÖÊı
-        resetScoreCounter = -1;  // ÖØÖÃÍê³É
+        score = 0;  // å®é™…é‡ç½®åˆ†æ•°
+        resetScoreCounter = -1;  // é‡ç½®å®Œæˆ
     }
 
     if (gameOver || gamePaused) return;
@@ -67,7 +127,7 @@ void PVZWinApp::gameTickLoop(HWND hWnd, UINT nMsg, UINT_PTR nIDEvent, DWORD dwTi
     auto& ejectList = yard.getEjectList();
     auto& zombieList = yard.getZombieList();
 
-    // ¼ì²â½©Ê¬ÊÇ·ñµ½´ï·¿×Ó
+    // æ£€æµ‹åƒµå°¸æ˜¯å¦åˆ°è¾¾æˆ¿å­
     for (int row = 0; row < 5; ++row) {
         for (auto& zombie : zombieList[row]) {
             if (zombie->getLeftX() <= 220) {
@@ -79,7 +139,7 @@ void PVZWinApp::gameTickLoop(HWND hWnd, UINT nMsg, UINT_PTR nIDEvent, DWORD dwTi
     }
     if (gameOver) return;
 
-    // ¾«È·¼ì²â½©Ê¬ËÀÍöÎ»ÖÃ
+    // ç²¾ç¡®æ£€æµ‹åƒµå°¸æ­»äº¡ä½ç½®
     static std::vector<std::list<std::shared_ptr<Zombie>>> lastZombieLists(5);
     for (int row = 0; row < 5; ++row) {
         for (auto& lastZombie : lastZombieLists[row]) {
@@ -94,10 +154,10 @@ void PVZWinApp::gameTickLoop(HWND hWnd, UINT nMsg, UINT_PTR nIDEvent, DWORD dwTi
                 int popupX = lastZombie->getLeftX() + lastZombie->getWidth() / 2;
                 int popupY = lastZombie->getTopY();
 
-                // ¸ù¾İ½©Ê¬ÀàĞÍ¾ö¶¨·ÖÊı
-                int points = 10;  // Ä¬ÈÏÆÕÍ¨½©Ê¬10·Ö
+                // æ ¹æ®åƒµå°¸ç±»å‹å†³å®šåˆ†æ•°
+                int points = 10;  // é»˜è®¤æ™®é€šåƒµå°¸10åˆ†
                 if (dynamic_cast<BucketHeadZombie*>(lastZombie.get()) != nullptr) {
-                    points = 30;  // ÌúÍ°½©Ê¬30·Ö
+                    points = 30;  // é“æ¡¶åƒµå°¸30åˆ†
                 }
 
                 AddScorePopup(points, popupX, popupY);
@@ -106,12 +166,12 @@ void PVZWinApp::gameTickLoop(HWND hWnd, UINT nMsg, UINT_PTR nIDEvent, DWORD dwTi
         lastZombieLists[row] = zombieList[row];
     }
 
-    // Ã¿100 tick×Ô¶¯¼Ó1·Ö
+    // æ¯100 tickè‡ªåŠ¨åŠ 1åˆ†
     if (Visible::currentGameTick % 100 == 0) {
         AddScore(1);
     }
 
-    // ¸üĞÂÑô¹â×´Ì¬
+    // æ›´æ–°é˜³å…‰çŠ¶æ€
     auto iter = sunList.begin();
     for (; iter != sunList.end(); ) {
         auto& sun = *iter;
@@ -124,10 +184,10 @@ void PVZWinApp::gameTickLoop(HWND hWnd, UINT nMsg, UINT_PTR nIDEvent, DWORD dwTi
         }
     }
 
-    // ¸üĞÂÔº×Ó×´Ì¬
+    // æ›´æ–°é™¢å­çŠ¶æ€
     yard.update();
 
-    // ×ÔÈ»Éú³ÉÑô¹â
+    // è‡ªç„¶ç”Ÿæˆé˜³å…‰
     if (Visible::currentGameTick % 300 == 0) {
         int stX = (int)(yard.getWidth() / 6 + rand() % (int)(yard.getWidth() * 0.8));
         int stY = 80 + rand() % 40;
@@ -141,10 +201,10 @@ void PVZWinApp::gameTickLoop(HWND hWnd, UINT nMsg, UINT_PTR nIDEvent, DWORD dwTi
         sunList.push_front(sun);
     }
 
-    // Éú³É½©Ê¬ - ÈÚºÏÁ½¸ö°æ±¾µÄÉú³ÉÂß¼­
+    // ç”Ÿæˆåƒµå°¸ - èåˆä¸¤ä¸ªç‰ˆæœ¬çš„ç”Ÿæˆé€»è¾‘
     if (Visible::currentGameTick % 250 == 0) {
         std::shared_ptr<Zombie> zombie;
-        // 30%¸ÅÂÊÉú³ÉÌúÍ°½©Ê¬£¬70%¸ÅÂÊÉú³ÉÆÕÍ¨½©Ê¬
+        // 30%æ¦‚ç‡ç”Ÿæˆé“æ¡¶åƒµå°¸ï¼Œ70%æ¦‚ç‡ç”Ÿæˆæ™®é€šåƒµå°¸
         if (rand() % 100 < 30) {
             zombie = std::make_shared<BucketHeadZombie>();
         }
@@ -172,26 +232,26 @@ void PVZWinApp::GameOver() {
 }
 
 void PVZWinApp::AddScore(int points) {
-    // Èç¹ûÕıÔÚÖØÖÃ·ÖÊı£¬ºöÂÔ¼Ó·Ö
+    // å¦‚æœæ­£åœ¨é‡ç½®åˆ†æ•°ï¼Œå¿½ç•¥åŠ åˆ†
     if (resetScoreCounter >= 0) {
         return;
     }
     score += points;
 #ifdef _DEBUG
-    TRACE(_T("·ÖÊıÔö¼Ó:+%d,µ±Ç°·ÖÊı:%d\n"), points, score);
+    TRACE(_T("åˆ†æ•°å¢åŠ :+%d,å½“å‰åˆ†æ•°:%d\n"), points, score);
 #endif
 }
 
 void PVZWinApp::AddScorePopup(int points, int x, int y) {
-    // Èç¹ûÕıÔÚÖØÖÃ·ÖÊı£¬ºöÂÔÆ®×Ö
+    // å¦‚æœæ­£åœ¨é‡ç½®åˆ†æ•°ï¼Œå¿½ç•¥é£˜å­—
     if (resetScoreCounter >= 0) {
         return;
     }
 
-    // ÏÈÔö¼ÓÊµ¼Ê·ÖÊı
+    // å…ˆå¢åŠ å®é™…åˆ†æ•°
     AddScore(points);
 
-    // ÔÙÏÔÊ¾Æ®×ÖĞ§¹û
+    // å†æ˜¾ç¤ºé£˜å­—æ•ˆæœ
     ScorePopup popup;
     popup.points = points;
     popup.x = x - 50;
@@ -203,12 +263,12 @@ void PVZWinApp::AddScorePopup(int points, int x, int y) {
 }
 
 void PVZWinApp::ResetGame() {
-    // Á¢¼´ÖØÖÃÓÎÏ·×´Ì¬
+    // ç«‹å³é‡ç½®æ¸¸æˆçŠ¶æ€
     gameOver = false;
     gamePaused = false;
     Visible::currentGameTick = 0;
 
-    // Á¢¼´Çå¿ÕÆäËûÄÚÈİ
+    // ç«‹å³æ¸…ç©ºå…¶ä»–å†…å®¹
     scorePopups.clear();
 
     if (theDoc) {
@@ -217,26 +277,26 @@ void PVZWinApp::ResetGame() {
         auto& zombieList = yard.getZombieList();
         auto& ejectList = yard.getEjectList();
 
-        // Çå¿ÕÑô¹âÁĞ±í
+        // æ¸…ç©ºé˜³å…‰åˆ—è¡¨
         sunList.clear();
 
-        // Çå¿Õ½©Ê¬ÁĞ±í
+        // æ¸…ç©ºåƒµå°¸åˆ—è¡¨
         for (int row = 0; row < 5; ++row) {
             zombieList[row].clear();
         }
 
-        // Çå¿ÕÖ²Îï¾ØÕó
+        // æ¸…ç©ºæ¤ç‰©çŸ©é˜µ
         yard.foreach(yard.getPlantMatrix(), [](Yard::plant_iter& iter, int) {
             *iter = nullptr;
             });
 
-        // Çå¿ÕÍ¶ÉäÎïÁĞ±í
+        // æ¸…ç©ºæŠ•å°„ç‰©åˆ—è¡¨
         for (int row = 0; row < 5; ++row) {
             ejectList[row].clear();
         }
     }
 
-    // ÉèÖÃ·ÖÊıÖØÖÃ¼ÆÊıÆ÷£¨µÈ´ı3Ö¡ºóÖØÖÃ·ÖÊı£©
+    // è®¾ç½®åˆ†æ•°é‡ç½®è®¡æ•°å™¨ï¼ˆç­‰å¾…3å¸§åé‡ç½®åˆ†æ•°ï¼‰
     resetScoreCounter = 3;
 }
 
@@ -255,22 +315,22 @@ void PVZWinApp::loadNextFPS() {
 
     Yard& yard = theDoc->getYard();
 
-    // ¸üĞÂÖ²Îï¶¯»­Ö¡
+    // æ›´æ–°æ¤ç‰©åŠ¨ç”»å¸§
     yard.foreach(yard.getPlantMatrix(), [](Yard::plant_iter& iter, int) {
         if (*iter) (*iter)->nextAnimateTick();
         });
 
-    // ¸üĞÂ½©Ê¬¶¯»­Ö¡
+    // æ›´æ–°åƒµå°¸åŠ¨ç”»å¸§
     yard.foreach(yard.getZombieList(), [](Yard::zombie_iter& iter, int row) {
         (*iter)->nextAnimateTick();
         });
 
-    // ¸üĞÂÍ¶ÉäÎï¶¯»­Ö¡
+    // æ›´æ–°æŠ•å°„ç‰©åŠ¨ç”»å¸§
     yard.foreach(yard.getEjectList(), [](Yard::ejects_iter& iter, int) {
         (*iter)->nextAnimateTick();
         });
 
-    // ¸üĞÂÑô¹â¶¯»­Ö¡
+    // æ›´æ–°é˜³å…‰åŠ¨ç”»å¸§
     auto& sunList = theDoc->getSunList();
     for (auto& sun : sunList) {
         sun->nextAnimateTick();
@@ -278,7 +338,7 @@ void PVZWinApp::loadNextFPS() {
 }
 
 BOOL PVZWinApp::InitInstance() {
-    // MFCµ¥ÎÄµµÄ£°å³õÊ¼»¯
+    // MFCå•æ–‡æ¡£æ¨¡æ¿åˆå§‹åŒ–
     CSingleDocTemplate* pTemplate = new CSingleDocTemplate(
         IDR_MENU1, RUNTIME_CLASS(PVZDoc), RUNTIME_CLASS(PVZFrameWnd),
         RUNTIME_CLASS(PVZView));
@@ -286,19 +346,19 @@ BOOL PVZWinApp::InitInstance() {
     OnFileNew();
 
     if (m_pMainWnd) {
-        // »ñÈ¡ÎÄµµÖ¸Õë
+        // è·å–æ–‡æ¡£æŒ‡é’ˆ
         theDoc = (PVZDoc*)((CFrameWnd*)m_pMainWnd)->GetActiveDocument();
 
-        // ÉèÖÃÖ÷Ñ­»·¼ÆÊ±Æ÷
+        // è®¾ç½®ä¸»å¾ªç¯è®¡æ—¶å™¨
         m_pMainWnd->SetTimer(MAIN_LOOP_TIMER, FLASH_TICK, PVZWinApp::mainLoop);
-        // ÉèÖÃ¶¯»­¼ÆÊ±Æ÷
+        // è®¾ç½®åŠ¨ç”»è®¡æ—¶å™¨
         m_pMainWnd->SetTimer(ANIMATION_LOOP_TIMER, FPS, PVZWinApp::animationLoop);
-        // ÉèÖÃÓÎÏ·Âß¼­¼ÆÊ±Æ÷
+        // è®¾ç½®æ¸¸æˆé€»è¾‘è®¡æ—¶å™¨
         m_pMainWnd->SetTimer(GAME_TICK_LOOP, GAME_TICK, PVZWinApp::gameTickLoop);
     }
 
     if (m_pMainWnd) {
-        // ÉèÖÃ´°¿Ú´óĞ¡ºÍÎ»ÖÃ
+        // è®¾ç½®çª—å£å¤§å°å’Œä½ç½®
         auto& rc = Visible::rcManage.getResource("Yard", Yard::ImgNoon).at(0);
         m_pMainWnd->MoveWindow(0, 0, rc->GetWidth(),
             (int)(rc->GetHeight() + rc->GetHeight() * 0.1));
@@ -306,7 +366,7 @@ BOOL PVZWinApp::InitInstance() {
         m_pMainWnd->UpdateWindow();
     }
 
-    // ³õÊ¼»¯ÓÎÏ·×´Ì¬
+    // åˆå§‹åŒ–æ¸¸æˆçŠ¶æ€
     gameOver = false;
     gamePaused = false;
     score = 0;

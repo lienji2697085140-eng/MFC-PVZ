@@ -1,10 +1,9 @@
-#pragma once
-#include"stdafx.h"
-#include<afxwin.h>
+ï»¿#pragma once
+#include "stdafx.h"
+#include <afxwin.h>
 #include <list>
 #include <string>
 
-// ·ÖÊýµ¯³öÐ§¹û½á¹¹Ìå
 struct ScorePopup {
     int points;
     int x, y;
@@ -19,52 +18,18 @@ public:
     static bool gamePaused;
     static int score;
     static std::list<ScorePopup> scorePopups;
-    static int resetScoreCounter;  // Ö»Ìí¼Ó·ÖÊýÖØÖÃ¼ÆÊýÆ÷
-    /*// PVZWinApp.cpp ÈýÄ£Ê½ÇÐ»»ºËÐÄÂß¼­
-bool PVZWinApp::isTestMode = false; // È«¾ÖÄ£Ê½±êÖ¾
+    static int resetScoreCounter;
+    static int isTestMode1;
 
-void PVZWinApp::toggleGameMode() {
-    isTestMode = !isTestMode;
-    ResetGame(); // ÇÐ»»Ä£Ê½Ê±ÖØÖÃÓÎÏ·
-    // ¸ù¾ÝÄ£Ê½µ÷ÕûÓÎÏ·²ÎÊý
-    if (isTestMode) {
-        // ²âÊÔÄ£Ê½£ºÖ²ÎïÀäÈ´¼õ°ë¡¢ÆôÓÃµ÷ÊÔÏÔÊ¾
-        Plant::setCoolDownRatio(0.5); 
-        PVZView::enableDebugDisplay(true);
-    } else {
-        // Íæ¼ÒÄ£Ê½£º»Ö¸´Ä¬ÈÏ²ÎÊý¡¢½ûÓÃµ÷ÊÔÏÔÊ¾
-        Plant::setCoolDownRatio(1.0);
-        PVZView::enableDebugDisplay(false);
-    }
-    // ¸üÐÂ½çÃæÄ£Ê½ÌáÊ¾
-    if (theDoc && theDoc->getYard().getModeLabel()) {
-        CString modeText = isTestMode ? _T("µ±Ç°Ä£Ê½£ºTest Mode") : _T("µ±Ç°Ä£Ê½£ºPlayer Mode");
-        theDoc->getYard().getModeLabel()->SetWindowText(modeText);
-    }
-}
-
-// PVZView.cpp ¿ì½Ý¼ü´¥·¢Ä£Ê½ÇÐ»»
-void PVZView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
-    // F1¼üÇÐ»»Ä£Ê½
-    if (nChar == VK_F1) {
-        PVZWinApp::toggleGameMode();
-        Invalidate(TRUE);
-        return;
-    }
-    // ÆäËû°´¼üÂß¼­£¨¿Õ¸ñÔÝÍ£¡¢ESCÍË³ö²ù×ÓÄ£Ê½µÈ£©
-    // ...
-}*/
     static void updateScreen();
     static void loadNextFPS();
     static void mainLoop(HWND, UINT, UINT_PTR, DWORD);
     static void animationLoop(HWND, UINT, UINT_PTR, DWORD);
     static void gameTickLoop(HWND, UINT, UINT_PTR, DWORD);
-
     static void GameOver();
     static void ResetGame();
     static void AddScore(int points);
     static void AddScorePopup(int points, int x, int y);
 
-public:
     virtual BOOL InitInstance();
 };
